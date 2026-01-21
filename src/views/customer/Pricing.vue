@@ -1,34 +1,88 @@
 <template>
   <div class="page-container">
     <el-card class="box-card" shadow="never">
+      <div class="filter-bar">
+        <el-form :inline="true" :model="filters" class="filter-form">
+          <el-form-item label="用户">
+            <el-select v-model="filters.uid" placeholder="请选择用户" filterable clearable style="width: 220px">
+              <el-option label="默认规则" :value="0" />
+              <el-option
+                v-for="u in accountOptions"
+                :key="u.uid"
+                :label="u.email"
+                :value="u.uid"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="类型">
+            <el-select v-model="filters.type" placeholder="请选择类型" clearable style="width: 160px">
+              <el-option label="数据中心 (hosting)" value="hosting" />
+              <el-option label="静态住宅 (isp)" value="isp" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="质量">
+            <el-select v-model="filters.quality" placeholder="请选择质量" clearable style="width: 160px">
+              <el-option
+                v-for="q in filterQualityOptions"
+                :key="q.value"
+                :label="q.label"
+                :value="q.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="区域">
+            <el-input v-model="filters.area" placeholder="区域" clearable />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
+            <el-button :icon="Refresh" @click="handleReset">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
       <template #header>
         <div class="card-header">
           <div class="header-left">
             <span class="title">客户单价配置</span>
           </div>
-          <el-button type="primary" :icon="Plus" @click="handleAdd">新增规则</el-button>
+          <div class="header-right">
+            <el-button type="primary" :icon="Plus" @click="handleAdd">新增规则</el-button>
+          </div>
         </div>
       </template>
 
-      <el-table :data="tableData" style="width: 100%" border v-loading="loading">
-        <el-table-column prop="uid" label="用户ID" width="100">
-          <template #default="scope">
-            {{ scope.row.uid === 0 ? '默认(0)' : scope.row.uid }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="email" label="邮箱" min-width="180">
+      <el-table 
+        :data="tableData" 
+        style="width: 100%" 
+        border 
+        v-loading="loading" 
+        stripe
+      >
+        <el-table-column prop="email" label="邮箱" min-width="180" show-overflow-tooltip>
           <template #default="scope">
              {{ scope.row.uid === 0 ? '默认' : (scope.row.email || '-') }}
           </template>
         </el-table-column>
-        <el-table-column prop="type" label="类型" width="120" />
-        <el-table-column prop="quality" label="质量" width="120" />
-        <el-table-column prop="area" label="区域" width="120" />
-        <el-table-column prop="region" label="地区" width="120" />
-        <el-table-column prop="price" label="价格" width="120" />
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column prop="type" label="类型" width="120">
+          <template #default="scope">
+            {{ formatTerm(scope.row.type) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="quality" label="质量" width="120">
+          <template #default="scope">
+            {{ formatTerm(scope.row.quality) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="area" label="区域" min-width="120" />
+        <el-table-column prop="region" label="地区" min-width="120" />
+        <el-table-column prop="price" label="价格" width="120" align="right">
+          <template #default="scope">
+            <span class="price-text">{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-divider direction="vertical" />
             <el-button link type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -54,15 +108,23 @@
       width="500px"
     >
       <el-form :model="formData" label-width="100px">
-        <el-form-item label="用户ID">
-          <el-input-number v-model="formData.uid" :min="0" />
-          <span class="tips">0表示默认规则</span>
+        <el-form-item label="用户">
+          <el-select v-model="formData.uid" placeholder="请选择用户" filterable style="width: 100%">
+            <el-option label="默认规则" :value="0" />
+            <el-option v-for="u in accountOptions" :key="u.uid" :label="u.email" :value="u.uid" />
+          </el-select>
+          <span class="tips">默认规则对未配置的用户生效</span>
         </el-form-item>
         <el-form-item label="类型">
-          <el-input v-model="formData.type" />
+          <el-select v-model="formData.type" placeholder="请选择类型" style="width: 100%" @change="handleTypeChange">
+            <el-option label="数据中心 (hosting)" value="hosting" />
+            <el-option label="静态住宅 (isp)" value="isp" />
+          </el-select>
         </el-form-item>
         <el-form-item label="质量">
-          <el-input v-model="formData.quality" />
+          <el-select v-model="formData.quality" placeholder="请选择质量" style="width: 100%">
+            <el-option v-for="q in qualityOptions" :key="q.value" :label="q.label" :value="q.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="区域">
           <el-input v-model="formData.area" />
@@ -85,10 +147,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { Plus } from '@element-plus/icons-vue'
-import request from '../../utils/request'
-import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ref, reactive, onMounted, computed } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { Plus, Search, Refresh } from '@element-plus/icons-vue'
+  import request from '../../utils/request'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  
+  // Helper function to format technical terms
+  const formatTerm = (term: string) => {
+    const map: Record<string, string> = {
+      'L3': '普通',
+      'L4': '原生',
+      'isp': '静态住宅',
+      'hosting': '数据中心'
+    }
+    return map[term] || term
+  }
 
 interface StaticProxyPrice {
   id?: number
@@ -102,6 +176,12 @@ interface StaticProxyPrice {
   price: number
 }
 
+interface AccountOption {
+  uid: number
+  email: string
+  nickname?: string
+}
+
 const loading = ref(false)
 const tableData = ref<StaticProxyPrice[]>([])
 const total = ref(0)
@@ -111,12 +191,62 @@ const dialogVisible = ref(false)
 const dialogType = ref<'create' | 'edit'>('create')
 const formData = reactive<StaticProxyPrice>({
   uid: 0,
-  type: '',
-  quality: '',
+  type: 'hosting',
+  quality: 'L3',
   area: '',
   region: '',
   price: 0
 })
+
+const accountOptions = ref<AccountOption[]>([])
+
+const qualityOptions = computed(() => {
+  return formData.type === 'isp'
+    ? [{ value: 'L4', label: 'L4 原生' }]
+    : [{ value: 'L3', label: 'L3 普通' }]
+})
+
+const filterQualityOptions = computed(() => {
+  if (filters.type === 'isp') {
+    return [{ value: 'L4', label: 'L4 原生' }]
+  }
+  if (filters.type === 'hosting') {
+    return [{ value: 'L3', label: 'L3 普通' }]
+  }
+  return [
+    { value: 'L3', label: 'L3 普通' },
+    { value: 'L4', label: 'L4 原生' }
+  ]
+})
+
+// Filters
+const filters = reactive({
+  type: '',
+  quality: '',
+  area: '',
+  uid: undefined as number | undefined
+})
+const route = useRoute()
+const router = useRouter()
+
+const fetchAccounts = async () => {
+  try {
+    const res: any = await request.get('/account/list', {
+      params: {
+        page: 1,
+        size: 1000
+      }
+    })
+    accountOptions.value = (res.data.list || []).map((u: any) => ({
+      uid: u.uid,
+      email: u.email,
+      nickname: u.nickname
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 
 const fetchList = async () => {
   loading.value = true
@@ -124,7 +254,11 @@ const fetchList = async () => {
     const res = await request.get('/static-proxy-price/list', {
       params: {
         page: currentPage.value,
-        size: pageSize.value
+        size: pageSize.value,
+        uid: filters.uid ?? undefined,
+        type: filters.type || undefined,
+        quality: filters.quality || undefined,
+        area: filters.area || undefined,
       }
     })
     tableData.value = res.data.list
@@ -136,13 +270,59 @@ const fetchList = async () => {
   }
 }
 
+const syncQuery = () => {
+  router.replace({
+    query: {
+      page: String(currentPage.value),
+      size: String(pageSize.value),
+      uid: filters.uid !== undefined ? String(filters.uid) : undefined,
+      type: filters.type || undefined,
+      quality: filters.quality || undefined,
+      area: filters.area || undefined,
+    }
+  })
+}
+
+const initFromQuery = () => {
+  const q = route.query as Record<string, any>
+  if (q.page) currentPage.value = Number(q.page) || 1
+  if (q.size) pageSize.value = Number(q.size) || 10
+  if (q.type) filters.type = String(q.type)
+  if (q.quality) filters.quality = String(q.quality)
+  if (q.area) filters.area = String(q.area)
+  if (q.uid !== undefined) {
+    const num = Number(q.uid)
+    filters.uid = Number.isNaN(num) ? undefined : num
+  }
+}
+
+const handleSearch = () => {
+  currentPage.value = 1
+  syncQuery()
+  fetchList()
+}
+
+const handleReset = () => {
+  Object.assign(filters, {
+    type: '',
+    quality: '',
+    area: '',
+    uid: undefined
+  })
+  currentPage.value = 1
+  syncQuery()
+  fetchList()
+}
+
 const handleSizeChange = (val: number) => {
   pageSize.value = val
+  syncQuery()
   fetchList()
 }
 
 const handleCurrentChange = (val: number) => {
   currentPage.value = val
+  syncQuery()
   fetchList()
 }
 
@@ -150,20 +330,30 @@ const handleAdd = () => {
   dialogType.value = 'create'
   Object.assign(formData, {
     uid: 0,
-    type: '',
-    quality: '',
+    type: 'hosting',
+    quality: 'L3',
     area: '',
     region: '',
     price: 0
   })
   delete formData.id
   dialogVisible.value = true
+  if (accountOptions.value.length === 0) {
+    fetchAccounts()
+  }
 }
 
 const handleEdit = (row: StaticProxyPrice) => {
   dialogType.value = 'edit'
   Object.assign(formData, row)
   dialogVisible.value = true
+  if (accountOptions.value.length === 0) {
+    fetchAccounts()
+  }
+}
+
+const handleTypeChange = (val: string) => {
+  formData.quality = val === 'isp' ? 'L4' : 'L3'
 }
 
 const handleDelete = (row: StaticProxyPrice) => {
@@ -193,40 +383,54 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
+  initFromQuery()
   fetchList()
+  fetchAccounts()
 })
 </script>
 
 <style scoped lang="scss">
 .page-container {
-  min-height: 100%;
+  padding: 20px;
 }
 
-.box-card {
-  border-radius: 4px;
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      .title {
-        font-size: 18px;
-        font-weight: bold;
-        color: #1f2937;
-      }
-    }
+.filter-bar {
+  margin-bottom: 12px;
+  .filter-form :deep(.el-form-item) {
+    margin-right: 12px;
+    margin-bottom: 8px;
   }
 }
 
-.price {
-  color: #f56c6c;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-left {
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1d2129;
+    }
+  }
+  
+  .header-right {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.price-text {
+  color: #ff7d00;
   font-weight: 600;
+  font-family: 'Roboto', sans-serif;
 }
 
 .tips {
@@ -235,9 +439,9 @@ onMounted(() => {
   color: #909399;
 }
 
-.pagination-container {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
+.form-tip {
+  font-size: 12px;
+  color: #86909c;
+  margin-top: 4px;
 }
 </style>

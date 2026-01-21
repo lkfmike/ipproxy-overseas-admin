@@ -37,14 +37,26 @@ const routes = [
       {
         path: '/proxy',
         name: 'Proxy',
-        meta: { title: '代理管理' },
-        redirect: '/proxy/static',
+        meta: { title: '静态代理IP' },
+        redirect: '/proxy/gateway',
         children: [
           {
-            path: 'static',
-            name: 'StaticProxy',
+            path: 'gateway',
+            name: 'StaticProxyGateway',
             component: () => import('../views/proxy/StaticProxy.vue'),
-            meta: { title: '静态代理IP' }
+            meta: { title: '网关' }
+          },
+          {
+            path: 'tools',
+            name: 'StaticProxyTools',
+            component: () => import('../views/proxy/Tools.vue'),
+            meta: { title: '工具' }
+          },
+          {
+            path: 'supplier-comparison',
+            name: 'StaticProxySupplierComparison',
+            component: () => import('../views/proxy/SupplierComparison.vue'),
+            meta: { title: '供应商对比' }
           }
         ]
       },

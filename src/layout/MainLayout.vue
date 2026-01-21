@@ -44,10 +44,24 @@
           </el-menu-item>
         </el-sub-menu>
 
-        <el-menu-item index="/proxy/static">
-          <el-icon><Connection /></el-icon>
-          <template #title>静态代理IP</template>
-        </el-menu-item>
+        <el-sub-menu index="/proxy">
+          <template #title>
+            <el-icon><Connection /></el-icon>
+            <span>静态代理IP</span>
+          </template>
+          <el-menu-item index="/proxy/gateway">
+            <el-icon><Connection /></el-icon>
+            <template #title>网关</template>
+          </el-menu-item>
+          <el-menu-item index="/proxy/tools">
+            <el-icon><Tools /></el-icon>
+            <template #title>工具</template>
+          </el-menu-item>
+          <el-menu-item index="/proxy/supplier-comparison">
+            <el-icon><DataLine /></el-icon>
+            <template #title>供应商对比</template>
+          </el-menu-item>
+        </el-sub-menu>
 
         <el-sub-menu index="/setting">
           <template #title>
@@ -121,7 +135,9 @@ import {
   ArrowDown,
   Setting,
   Location,
-  Connection
+  Connection,
+  Tools,
+  DataLine
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 

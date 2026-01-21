@@ -53,7 +53,11 @@
 
             <div class="form-options">
               <el-checkbox v-model="form.remember">记住我</el-checkbox>
-              <el-link type="primary" :underline="false">忘记密码？</el-link>
+              <div class="link-group">
+                <el-link type="primary" :underline="false" @click="forgotPasswordDialogVisible = true">忘记密码？</el-link>
+                <el-divider direction="vertical" />
+                <el-link type="primary" :underline="false" @click="registerDialogVisible = true">注册账号</el-link>
+              </div>
             </div>
 
             <el-form-item>
@@ -65,11 +69,69 @@
         </div>
       </div>
     </div>
+    
+    <!-- Register Dialog -->
+    <el-dialog v-model="registerDialogVisible" title="注册账号" width="420px" append-to-body @close="resetRegisterForm">
+      <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef" label-width="80px">
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="registerForm.email" placeholder="请输入邮箱" />
+        </el-form-item>
+        <el-form-item label="验证码" prop="code">
+          <div class="verify-code-container">
+            <el-input v-model="registerForm.code" placeholder="6位验证码" style="width: 160px" />
+            <el-button type="primary" link :disabled="registerTimer > 0" @click="sendRegisterCode">
+              {{ registerTimer > 0 ? `${registerTimer}s后重发` : '获取验证码' }}
+            </el-button>
+          </div>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="registerForm.password" type="password" show-password placeholder="6-20位密码" />
+        </el-form-item>
+        <el-form-item label="邀请码" prop="inviteCode">
+          <el-input v-model="registerForm.inviteCode" placeholder="请输入邀请码" />
+        </el-form-item>
+        <el-form-item label="TG账号" prop="telegram">
+          <el-input v-model="registerForm.telegram" placeholder="选填，方便联系" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="registerDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleRegister" :loading="registerLoading">注册</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- Forgot Password Dialog -->
+    <el-dialog v-model="forgotPasswordDialogVisible" title="重置密码" width="420px" append-to-body @close="resetForgotForm">
+      <el-form :model="forgotForm" :rules="forgotRules" ref="forgotFormRef" label-width="80px">
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="forgotForm.email" placeholder="请输入邮箱" />
+        </el-form-item>
+        <el-form-item label="验证码" prop="code">
+          <div class="verify-code-container">
+            <el-input v-model="forgotForm.code" placeholder="6位验证码" style="width: 160px" />
+            <el-button type="primary" link :disabled="forgotTimer > 0" @click="sendForgotCode">
+              {{ forgotTimer > 0 ? `${forgotTimer}s后重发` : '获取验证码' }}
+            </el-button>
+          </div>
+        </el-form-item>
+        <el-form-item label="新密码" prop="password">
+          <el-input v-model="forgotForm.password" type="password" show-password placeholder="请输入新密码" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="forgotPasswordDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleResetPassword" :loading="forgotLoading">确认重置</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
@@ -91,6 +153,163 @@ const rules = reactive<FormRules>({
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 })
 
+// Register Logic
+const registerDialogVisible = ref(false)
+const registerFormRef = ref<FormInstance>()
+const registerLoading = ref(false)
+const registerTimer = ref(0)
+let registerInterval: number | null = null
+
+const registerForm = reactive({
+  email: '',
+  code: '',
+  password: '',
+  inviteCode: '',
+  telegram: ''
+})
+
+const registerRules = reactive<FormRules>({
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+  ],
+  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }, { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }],
+  inviteCode: [{ required: true, message: '请输入邀请码', trigger: 'blur' }]
+})
+
+const sendRegisterCode = async () => {
+  if (!registerForm.email) {
+    ElMessage.warning('请先输入邮箱')
+    return
+  }
+  try {
+    await request.post('/auth/send-verify-code', { email: registerForm.email, type: 'register' })
+    ElMessage.success('验证码已发送')
+    startRegisterTimer()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const startRegisterTimer = () => {
+  registerTimer.value = 60
+  registerInterval = window.setInterval(() => {
+    if (registerTimer.value > 0) {
+      registerTimer.value--
+    } else {
+      if (registerInterval) clearInterval(registerInterval)
+    }
+  }, 1000)
+}
+
+const handleRegister = async () => {
+  if (!registerFormRef.value) return
+  await registerFormRef.value.validate(async (valid) => {
+    if (valid) {
+      registerLoading.value = true
+      try {
+        const res: any = await request.post('/auth/register', registerForm)
+        ElMessage.success('注册成功，已自动登录')
+        handleLoginSuccess(res)
+        registerDialogVisible.value = false
+      } catch (error) {
+        console.error(error)
+      } finally {
+        registerLoading.value = false
+      }
+    }
+  })
+}
+
+const resetRegisterForm = () => {
+  if (registerFormRef.value) registerFormRef.value.resetFields()
+  if (registerInterval) clearInterval(registerInterval)
+  registerTimer.value = 0
+}
+
+// Forgot Password Logic
+const forgotPasswordDialogVisible = ref(false)
+const forgotFormRef = ref<FormInstance>()
+const forgotLoading = ref(false)
+const forgotTimer = ref(0)
+let forgotInterval: number | null = null
+
+const forgotForm = reactive({
+  email: '',
+  code: '',
+  password: ''
+})
+
+const forgotRules = reactive<FormRules>({
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+  ],
+  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入新密码', trigger: 'blur' }, { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }]
+})
+
+const sendForgotCode = async () => {
+  if (!forgotForm.email) {
+    ElMessage.warning('请先输入邮箱')
+    return
+  }
+  try {
+    await request.post('/auth/send-verify-code', { email: forgotForm.email, type: 'reset-password' })
+    ElMessage.success('验证码已发送')
+    startForgotTimer()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const startForgotTimer = () => {
+  forgotTimer.value = 60
+  forgotInterval = window.setInterval(() => {
+    if (forgotTimer.value > 0) {
+      forgotTimer.value--
+    } else {
+      if (forgotInterval) clearInterval(forgotInterval)
+    }
+  }, 1000)
+}
+
+const handleResetPassword = async () => {
+  if (!forgotFormRef.value) return
+  await forgotFormRef.value.validate(async (valid) => {
+    if (valid) {
+      forgotLoading.value = true
+      try {
+        await request.post('/auth/reset-password', forgotForm)
+        ElMessage.success('密码重置成功，请重新登录')
+        forgotPasswordDialogVisible.value = false
+      } catch (error) {
+        console.error(error)
+      } finally {
+        forgotLoading.value = false
+      }
+    }
+  })
+}
+
+const resetForgotForm = () => {
+  if (forgotFormRef.value) forgotFormRef.value.resetFields()
+  if (forgotInterval) clearInterval(forgotInterval)
+  forgotTimer.value = 0
+}
+
+const handleLoginSuccess = (res: any) => {
+  localStorage.setItem('token', res.data.token)
+  if (res.data.refreshToken) localStorage.setItem('refreshToken', res.data.refreshToken)
+  localStorage.setItem('userInfo', JSON.stringify({
+    userId: res.data.userId,
+    email: res.data.email
+  }))
+  
+  router.push('/')
+}
+
 const handleLogin = async () => {
   if (!formRef.value) return
   
@@ -103,15 +322,8 @@ const handleLogin = async () => {
           password: form.password
         })
         
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('refreshToken', res.data.refreshToken)
-        localStorage.setItem('userInfo', JSON.stringify({
-          userId: res.data.userId,
-          email: res.data.email
-        }))
-        
         ElMessage.success('登录成功')
-        router.push('/')
+        handleLoginSuccess(res)
       } catch (error) {
         console.error(error)
       } finally {
@@ -120,9 +332,26 @@ const handleLogin = async () => {
     }
   })
 }
+
+onBeforeUnmount(() => {
+  if (registerInterval) clearInterval(registerInterval)
+  if (forgotInterval) clearInterval(forgotInterval)
+})
 </script>
 
 <style scoped lang="scss">
+.link-group {
+  display: flex;
+  align-items: center;
+}
+
+.verify-code-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .login-container {
   height: 100%;
   width: 100%;

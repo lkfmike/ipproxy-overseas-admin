@@ -23,46 +23,113 @@
         </el-form>
       </div>
 
-      <el-table :data="tableData" style="width: 100%" v-loading="loading" stripe border>
-        <el-table-column prop="uid" label="UID" width="80" align="center" />
-        <el-table-column prop="email" label="邮箱" min-width="180" />
-        <el-table-column prop="telegram" label="Telegram" min-width="120" />
-        <el-table-column prop="inviteCode" label="邀请码" width="100" align="center" />
-        <el-table-column prop="balance" label="余额" min-width="120" align="right">
-          <template #default="scope">
-            <span class="price">${{ Number(scope.row.balance || 0).toFixed(2) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" width="100" align="center">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small" effect="light">
-              {{ scope.row.status === 1 ? '正常' : '禁用' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="createdAt" label="注册时间" min-width="160" align="center">
-           <template #default="scope">
-              {{ formatDate(scope.row.createdAt) }}
-           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="220" fixed="right" align="center">
-          <template #default="scope">
-            <el-button link type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
-            <el-divider direction="vertical" />
-            <el-button link type="primary" size="small" @click="handleBalance(scope.row)">余额</el-button>
-            <el-divider direction="vertical" />
-            <el-button 
-              link 
-              :type="scope.row.status === 1 ? 'danger' : 'success'" 
-              size="small" 
-              @click="handleStatusChange(scope.row)"
-            >
-              {{ scope.row.status === 1 ? '禁用' : '启用' }}
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div v-loading="loading">
+        <!-- Desktop Table View -->
+        <el-table v-if="!isMobile" :data="tableData" style="width: 100%" stripe border>
+          <el-table-column prop="uid" label="UID" width="80" align="center" />
+          <el-table-column prop="email" label="邮箱" min-width="180">
+             <template #default="scope">
+                <div class="user-info">
+                  <el-avatar :size="24" :icon="UserFilled" class="mr-2" />
+                  <span>{{ scope.row.email }}</span>
+                </div>
+             </template>
+          </el-table-column>
+          <el-table-column prop="telegram" label="Telegram" min-width="120" />
+          <el-table-column prop="inviteCode" label="邀请码" width="100" align="center" />
+          <el-table-column prop="balance" label="余额" min-width="120" align="right" sortable>
+            <template #default="scope">
+              <span class="price text-bold">${{ Number(scope.row.balance || 0).toFixed(2) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" label="状态" width="100" align="center">
+            <template #default="scope">
+              <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" effect="dark" size="small">
+                {{ scope.row.status === 1 ? '正常' : '禁用' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
+          <el-table-column prop="createdAt" label="注册时间" min-width="160" align="center" sortable>
+             <template #default="scope">
+                {{ formatDate(scope.row.createdAt) }}
+             </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200" fixed="right" align="center">
+            <template #default="scope">
+              <el-button-group>
+                <el-tooltip content="查看详情" placement="top">
+                  <el-button link type="primary" :icon="View" @click="handleDetail(scope.row)" />
+                </el-tooltip>
+                <el-tooltip content="余额管理" placement="top">
+                  <el-button link type="warning" :icon="Money" @click="handleBalance(scope.row)" />
+                </el-tooltip>
+                <el-tooltip :content="scope.row.status === 1 ? '禁用账户' : '启用账户'" placement="top">
+                  <el-button 
+                    link 
+                    :type="scope.row.status === 1 ? 'danger' : 'success'" 
+                    :icon="scope.row.status === 1 ? 'Lock' : 'Unlock'"
+                    @click="handleStatusChange(scope.row)"
+                  />
+                </el-tooltip>
+              </el-button-group>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- Mobile/Card Grid View -->
+        <el-row :gutter="16" v-else>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="item in tableData" :key="item.uid" class="mb-4">
+            <el-card shadow="hover" class="user-card">
+              <div class="user-card-header">
+                <div class="user-main">
+                  <el-avatar :size="40" class="user-avatar">{{ item.email.charAt(0).toUpperCase() }}</el-avatar>
+                  <div class="user-meta">
+                    <div class="user-email" :title="item.email">{{ item.email }}</div>
+                    <div class="user-uid">UID: {{ item.uid }}</div>
+                  </div>
+                </div>
+                <el-tag :type="item.status === 1 ? 'success' : 'danger'" size="small" effect="dark">
+                  {{ item.status === 1 ? '正常' : '禁用' }}
+                </el-tag>
+              </div>
+              
+              <div class="user-card-body">
+                <div class="info-row">
+                  <span class="label">Telegram</span>
+                  <span class="value">{{ item.telegram || '-' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">邀请码</span>
+                  <span class="value">{{ item.inviteCode || '-' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">余额</span>
+                  <span class="value price">${{ Number(item.balance || 0).toFixed(2) }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">注册时间</span>
+                  <span class="value">{{ formatDate(item.createdAt).split(' ')[0] }}</span>
+                </div>
+              </div>
+
+              <div class="user-card-footer">
+                <el-button text bg size="small" @click="handleDetail(item)">详情</el-button>
+                <el-button text bg type="warning" size="small" @click="handleBalance(item)">余额</el-button>
+                <el-button 
+                  text 
+                  bg 
+                  :type="item.status === 1 ? 'danger' : 'success'" 
+                  size="small" 
+                  @click="handleStatusChange(item)"
+                >
+                  {{ item.status === 1 ? '禁用' : '启用' }}
+                </el-button>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </div>
 
       <div class="pagination-container">
         <el-pagination
@@ -83,15 +150,18 @@
       <el-form :model="createForm" :rules="createRules" ref="createFormRef" label-width="100px" label-position="left">
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="createForm.email" placeholder="请输入邮箱" />
+          <div class="form-tip">用于登录和接收通知，请填写常用邮箱</div>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="createForm.password" placeholder="请输入密码" show-password />
+          <el-input v-model="createForm.password" placeholder="请输入密码（至少6位）" show-password />
+          <div class="form-tip">建议包含大小写字母与数字，避免使用常见弱密码</div>
         </el-form-item>
         <el-form-item label="Telegram" prop="telegram">
           <el-input v-model="createForm.telegram" placeholder="请输入Telegram账号" />
+          <div class="form-tip">可选，用于接收系统通知与支持沟通</div>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="createForm.remark" type="textarea" placeholder="请输入备注" :rows="3" />
+          <el-input v-model="createForm.remark" type="textarea" placeholder="请输入备注（最多100字）" :rows="3" maxlength="100" show-word-limit />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -160,8 +230,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { Plus, Search, Refresh, DocumentCopy } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import {
+  Plus,
+  Search,
+  Refresh,
+  DocumentCopy,
+  UserFilled,
+  View,
+  Money,
+  Lock,
+  Unlock
+} from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import request from '../../utils/request'
@@ -179,11 +260,19 @@ interface Account {
   apiToken: string
 }
 
+// Mobile Check
+const isMobile = ref(false)
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+}
+
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const tableData = ref<Account[]>([])
+const route = useRoute()
+const router = useRouter()
 
 const filterForm = reactive({
   email: ''
@@ -206,7 +295,8 @@ const createRules = reactive<FormRules>({
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+    { min: 6, message: '密码长度不能小于6位', trigger: 'blur' },
+    { pattern: /^\S+$/, message: '密码不能包含空格', trigger: 'blur' }
   ]
 })
 
@@ -221,7 +311,13 @@ const balanceForm = reactive({
 })
 const balanceRules = reactive<FormRules>({
   amount: [
-    { required: true, message: '请输入金额', trigger: 'blur' }
+    { required: true, message: '请输入金额', trigger: 'blur' },
+    { validator: (_rule, value, callback) => {
+        if (value === null || value === undefined || value === '') return callback(new Error('请输入金额'))
+        if (Number(value) < 0) return callback(new Error('金额不可为负数'))
+        callback()
+      }, trigger: 'blur'
+    }
   ]
 })
 
@@ -267,23 +363,45 @@ const fetchData = async () => {
   }
 }
 
+const syncQuery = () => {
+  router.replace({
+    query: {
+      page: String(currentPage.value),
+      size: String(pageSize.value),
+      email: filterForm.email || undefined
+    }
+  })
+}
+
+const initFromQuery = () => {
+  const q = route.query as Record<string, any>
+  if (q.page) currentPage.value = Number(q.page) || 1
+  if (q.size) pageSize.value = Number(q.size) || 10
+  if (q.email) filterForm.email = String(q.email)
+}
+
 const handleSearch = () => {
   currentPage.value = 1
+  syncQuery()
   fetchData()
 }
 
 const handleReset = () => {
   filterForm.email = ''
+  currentPage.value = 1
+  syncQuery()
   handleSearch()
 }
 
 const handleSizeChange = (val: number) => {
   pageSize.value = val
+  syncQuery()
   fetchData()
 }
 
 const handleCurrentChange = (val: number) => {
   currentPage.value = val
+  syncQuery()
   fetchData()
 }
 
@@ -334,7 +452,7 @@ const handleStatusChange = (row: Account) => {
       ElMessage.success(`${action}成功`)
       fetchData()
     } catch (error) {
-      // Error handled
+      ElMessage.error(`${action}失败`)
     }
   })
 }
@@ -367,11 +485,18 @@ const submitBalance = async () => {
 }
 
 onMounted(() => {
+  initFromQuery()
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
   fetchData()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .page-container {
   /* Padding handled by MainLayout */
 }
@@ -380,47 +505,167 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1d2129;
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1d2129;
+    }
+
+    .count-tag {
+      font-weight: normal;
+    }
+  }
 }
 
 .filter-container {
   margin-bottom: 24px;
-  padding: 24px;
-  background-color: #fff;
+  background-color: #f7f8fa;
+  padding: 16px;
   border-radius: 4px;
-  border: 1px solid #e5e6eb;
-}
 
-.demo-form-inline {
-  margin-bottom: 0;
-}
-
-.price {
-  color: #f53f3f;
-  font-weight: 600;
-  font-family: 'Helvetica Neue', sans-serif;
-}
-
-.price-text {
-  font-weight: 600;
-  font-size: 16px;
-  color: #1d2129;
+  :deep(.el-form-item) {
+    margin-bottom: 0;
+    margin-right: 24px;
+  }
 }
 
 .pagination-container {
-  margin-top: 24px;
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+.price {
+  color: #ff7d00;
+  font-family: 'Roboto', sans-serif;
+}
+
+.form-tip {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #86909c;
+}
+
+.text-bold {
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  
+  span {
+    font-weight: 500;
+    color: #1d2129;
+  }
+}
+
+/* Card Grid Styles */
+.user-card {
+  transition: all 0.3s;
+  border: 1px solid #e5e6eb;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    
+    .user-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      .user-avatar {
+        background-color: #165dff;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      
+      .user-meta {
+        .user-email {
+          font-weight: 600;
+          color: #1d2129;
+          font-size: 14px;
+          margin-bottom: 2px;
+          max-width: 140px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .user-uid {
+          font-size: 12px;
+          color: #86909c;
+        }
+      }
+    }
+  }
+
+  .user-card-body {
+    background-color: #f7f8fa;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 16px;
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        color: #86909c;
+      }
+
+      .value {
+        color: #1d2129;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .user-card-footer {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #f2f3f5;
+    padding-top: 12px;
+    margin-top: 12px;
+    
+    .el-button {
+      padding: 4px 8px;
+      height: 24px;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .filter-container {
+    padding: 12px;
+    
+    :deep(.el-form-item) {
+      margin-right: 0;
+      margin-bottom: 12px;
+      width: 100%;
+      
+      .el-form-item__content {
+        width: 100%;
+      }
+    }
+  }
 }
 </style>

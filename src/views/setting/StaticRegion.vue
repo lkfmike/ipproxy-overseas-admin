@@ -5,6 +5,7 @@
         <div class="card-header">
           <div class="header-left">
             <span class="title">静态地区设置</span>
+            <el-tag type="info" size="small" effect="plain" class="count-tag">共 {{ total }} 条数据</el-tag>
           </div>
           <el-button type="primary" :icon="Plus" @click="handleCreate">新增地区</el-button>
         </div>
@@ -27,10 +28,10 @@
 
       <el-table :data="tableData" style="width: 100%" v-loading="loading" stripe border>
         <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="area" label="区域代码" min-width="120" />
-        <el-table-column prop="areaCn" label="区域中文名称" min-width="150" />
-        <el-table-column prop="region" label="地区代码" min-width="120" />
-        <el-table-column prop="regionCn" label="地区中文名称" min-width="150" />
+        <el-table-column prop="area" label="区域代码" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="areaCn" label="区域中文名称" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="region" label="地区代码" min-width="120" show-overflow-tooltip />
+        <el-table-column prop="regionCn" label="地区中文名称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="isShow" label="是否显示" width="100" align="center">
           <template #default="scope">
             <el-tag :type="scope.row.isShow === 1 ? 'success' : 'info'">
@@ -102,6 +103,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Plus, Search, Refresh } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
@@ -122,6 +124,8 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const tableData = ref<AreaRegionInfo[]>([])
+const route = useRoute()
+const router = useRouter()
 
 const filterForm = reactive({
   area: '',
@@ -168,24 +172,48 @@ const fetchData = async () => {
   }
 }
 
+const syncQuery = () => {
+  router.replace({
+    query: {
+      page: String(currentPage.value),
+      size: String(pageSize.value),
+      area: filterForm.area || undefined,
+      region: filterForm.region || undefined
+    }
+  })
+}
+
+const initFromQuery = () => {
+  const q = route.query as Record<string, any>
+  if (q.page) currentPage.value = Number(q.page) || 1
+  if (q.size) pageSize.value = Number(q.size) || 10
+  if (q.area) filterForm.area = String(q.area)
+  if (q.region) filterForm.region = String(q.region)
+}
+
 const handleSearch = () => {
   currentPage.value = 1
+  syncQuery()
   fetchData()
 }
 
 const handleReset = () => {
   filterForm.area = ''
   filterForm.region = ''
+  currentPage.value = 1
+  syncQuery()
   handleSearch()
 }
 
 const handleSizeChange = (val: number) => {
   pageSize.value = val
+  syncQuery()
   fetchData()
 }
 
 const handleCurrentChange = (val: number) => {
   currentPage.value = val
+  syncQuery()
   fetchData()
 }
 
@@ -244,48 +272,65 @@ const submitForm = async () => {
 }
 
 onMounted(() => {
+  initFromQuery()
   fetchData()
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .page-container {
-  /* Padding handled by MainLayout */
+  padding: 20px;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1d2129;
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1d2129;
+    }
+    .count-tag {
+      font-weight: normal;
+    }
+  }
 }
 
 .filter-container {
   margin-bottom: 24px;
-  padding: 24px;
-  background-color: #fff;
+  background-color: #f7f8fa;
+  padding: 16px;
   border-radius: 4px;
-  border: 1px solid #e5e6eb;
-}
 
-.demo-form-inline {
-  margin-bottom: 0;
+  :deep(.el-form-item) {
+    margin-bottom: 0;
+    margin-right: 24px;
+  }
 }
 
 .pagination-container {
-  margin-top: 24px;
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+@media screen and (max-width: 768px) {
+  .filter-container {
+    padding: 12px;
+    :deep(.el-form-item) {
+      margin-right: 0;
+      margin-bottom: 12px;
+      width: 100%;
+      .el-form-item__content {
+        width: 100%;
+      }
+    }
+  }
 }
 </style>
