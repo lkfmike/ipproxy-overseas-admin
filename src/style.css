@@ -1,0 +1,202 @@
+:root {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 14px;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Professional Business Theme Variables */
+  
+  /* Colors - Business Blue Theme */
+  --el-color-primary: #165DFF; /* Tech Blue / Business Blue */
+  --el-color-primary-light-3: #4080FF;
+  --el-color-primary-light-5: #699DFF;
+  --el-color-primary-light-7: #94BFFF;
+  --el-color-primary-light-8: #B8D6FF;
+  --el-color-primary-light-9: #E8F3FF;
+  --el-color-primary-dark-2: #0E42D2;
+  
+  /* Neutral Colors */
+  --el-text-color-primary: #1D2129; /* Darker for better contrast */
+  --el-text-color-regular: #4E5969;
+  --el-text-color-secondary: #86909C;
+  --el-text-color-placeholder: #C9CDD4;
+  
+  /* Borders */
+  --el-border-color: #E5E6EB;
+  --el-border-color-light: #F2F3F5;
+  --el-border-color-lighter: #F7F8FA;
+  
+  /* Radius - Consistent 4px */
+  --el-border-radius-base: 4px !important;
+  --el-border-radius-small: 2px !important;
+  --el-border-radius-round: 20px !important;
+  
+  /* Shadows - Subtle & Professional */
+  --el-box-shadow-light: 0 2px 8px 0 rgba(0, 0, 0, 0.04) !important;
+  --el-box-shadow-lighter: 0 1px 4px 0 rgba(0, 0, 0, 0.02) !important;
+  --el-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #F2F3F5; /* Light grey business background */
+  color: #1D2129;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Element Plus Component Overrides for Business Professional Look */
+
+/* Buttons */
+.el-button {
+  font-weight: 400;
+  border-radius: 4px;
+  padding: 8px 16px; /* Standard padding */
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1); /* Quick, smooth transition */
+}
+
+.el-button--primary {
+  box-shadow: none !important; /* Remove heavy shadows */
+}
+
+.el-button--primary:hover {
+  background-color: var(--el-color-primary-light-3);
+  border-color: var(--el-color-primary-light-3);
+}
+
+/* Cards */
+.el-card {
+  border: 1px solid var(--el-border-color-light) !important;
+  border-radius: 4px !important;
+  box-shadow: var(--el-box-shadow-light) !important;
+  background-color: #FFFFFF;
+}
+
+.el-card:hover {
+  box-shadow: var(--el-box-shadow) !important;
+}
+
+.el-card__header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--el-border-color-light);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--el-text-color-primary);
+}
+
+.el-card__body {
+  padding: 20px;
+}
+
+/* Inputs */
+.el-input__wrapper {
+  border-radius: 4px !important;
+  box-shadow: 0 0 0 1px var(--el-border-color) inset !important;
+  padding: 1px 11px;
+}
+
+.el-input__wrapper:hover {
+  box-shadow: 0 0 0 1px var(--el-color-primary) inset !important;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 0 0 2px var(--el-color-primary-light-8) !important;
+}
+
+/* Tables */
+.el-table {
+  --el-table-header-bg-color: #F7F8FA;
+  --el-table-header-text-color: #1D2129;
+  --el-table-row-hover-bg-color: #F2F3F5;
+  border-radius: 4px;
+}
+
+.el-table th.el-table__cell {
+  background-color: var(--el-table-header-bg-color) !important;
+  font-weight: 600;
+  height: 44px; /* Compact header */
+}
+
+.el-table td.el-table__cell {
+  padding: 12px 0;
+}
+
+/* Dialogs */
+.el-dialog {
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.el-dialog__header {
+  margin-right: 0;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.el-dialog__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  line-height: 24px;
+}
+
+.el-dialog__body {
+  padding: 24px;
+}
+
+.el-dialog__footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--el-border-color-light);
+  background-color: #FFFFFF;
+}
+
+/* Form Layout */
+.el-form-item__label {
+  font-weight: 400;
+  color: var(--el-text-color-regular);
+}
+
+/* Transition Control */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease; /* Faster transition */
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Responsive Utilities */
+@media screen and (max-width: 768px) {
+  .hidden-xs-only {
+    display: none !important;
+  }
+  
+  .el-dialog {
+    width: 90% !important;
+  }
+  
+  .el-main {
+    padding: 12px !important;
+  }
+  
+  .page-container {
+    padding: 0 !important;
+  }
+}
