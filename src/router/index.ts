@@ -105,7 +105,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const title = to.meta.title ? `${to.meta.title} - NexusIP` : 'NexusIP - 海外IP资源管理平台'
+  const title = to.meta.title ? `${to.meta.title} - ProxyNexus` : 'ProxyNexus - 海外IP资源管理平台'
   document.title = title
   next()
 })

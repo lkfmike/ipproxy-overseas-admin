@@ -14,9 +14,9 @@
       :class="{ 'mobile-aside': isMobile, 'mobile-aside-open': isMobile && !isCollapse }"
     >
       <div class="logo" @click="goHome">
-        <img src="../assets/vue.svg" alt="logo" class="logo-img" />
+        <img src="../assets/proxynexus.svg" alt="logo" class="logo-img" />
         <transition name="fade">
-          <span class="logo-text" v-if="!isCollapse">IPProxy Admin</span>
+          <span class="logo-text" v-if="!isCollapse">ProxyNexus</span>
         </transition>
       </div>
       
@@ -113,7 +113,7 @@
       </el-main>
       
       <el-footer class="footer">
-        © 2024 IPProxy Overseas. All rights reserved.
+        © 2026 ProxyNexus. All rights reserved.
       </el-footer>
     </el-container>
   </el-container>

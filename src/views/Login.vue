@@ -5,7 +5,7 @@
         <div class="login-info">
           <div class="logo">
             <el-icon :size="40" color="#fff"><Connection /></el-icon>
-            <span class="logo-text">IPProxy Overseas</span>
+            <span class="logo-text">ProxyNexus</span>
           </div>
           <div class="title">全球专业 IP 代理服务</div>
           <div class="subtitle">安全、高速、可靠的企业级解决方案</div>
