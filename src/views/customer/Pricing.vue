@@ -3,17 +3,6 @@
     <el-card class="box-card" shadow="never">
       <div class="filter-bar">
         <el-form :inline="true" :model="filters" class="filter-form">
-          <el-form-item label="用户">
-            <el-select v-model="filters.uid" placeholder="请选择用户" filterable clearable style="width: 220px">
-              <el-option label="默认规则" :value="0" />
-              <el-option
-                v-for="u in accountOptions"
-                :key="u.uid"
-                :label="u.email"
-                :value="u.uid"
-              />
-            </el-select>
-          </el-form-item>
           <el-form-item label="类型">
             <el-select v-model="filters.type" placeholder="请选择类型" clearable style="width: 160px">
               <el-option label="数据中心 (hosting)" value="hosting" />
@@ -42,7 +31,7 @@
       <template #header>
         <div class="card-header">
           <div class="header-left">
-            <span class="title">客户单价配置</span>
+            <span class="title">地区单价配置</span>
           </div>
           <div class="header-right">
             <el-button type="primary" :icon="Plus" @click="handleAdd">新增规则</el-button>
@@ -51,17 +40,13 @@
       </template>
 
       <el-table 
+        v-if="mounted"
         :data="tableData" 
         style="width: 100%" 
         border 
         v-loading="loading" 
         stripe
       >
-        <el-table-column prop="email" label="邮箱" min-width="180" show-overflow-tooltip>
-          <template #default="scope">
-             {{ scope.row.uid === 0 ? '默认' : (scope.row.email || '-') }}
-          </template>
-        </el-table-column>
         <el-table-column prop="type" label="类型" width="120">
           <template #default="scope">
             {{ formatTerm(scope.row.type) }}
@@ -108,13 +93,6 @@
       width="500px"
     >
       <el-form :model="formData" label-width="100px">
-        <el-form-item label="用户">
-          <el-select v-model="formData.uid" placeholder="请选择用户" filterable style="width: 100%">
-            <el-option label="默认规则" :value="0" />
-            <el-option v-for="u in accountOptions" :key="u.uid" :label="u.email" :value="u.uid" />
-          </el-select>
-          <span class="tips">默认规则对未配置的用户生效</span>
-        </el-form-item>
         <el-form-item label="类型">
           <el-select v-model="formData.type" placeholder="请选择类型" style="width: 100%" @change="handleTypeChange">
             <el-option label="数据中心 (hosting)" value="hosting" />
@@ -155,6 +133,7 @@
   
   // Helper function to format technical terms
   const formatTerm = (term: string) => {
+    if (!term) return ''
     const map: Record<string, string> = {
       'L3': '普通',
       'L4': '原生',
@@ -166,9 +145,6 @@
 
 interface StaticProxyPrice {
   id?: number
-  uid: number
-  email?: string
-  nickname?: string
   type: string
   quality: string
   area: string
@@ -176,12 +152,7 @@ interface StaticProxyPrice {
   price: number
 }
 
-interface AccountOption {
-  uid: number
-  email: string
-  nickname?: string
-}
-
+const mounted = ref(false)
 const loading = ref(false)
 const tableData = ref<StaticProxyPrice[]>([])
 const total = ref(0)
@@ -190,15 +161,12 @@ const pageSize = ref(10)
 const dialogVisible = ref(false)
 const dialogType = ref<'create' | 'edit'>('create')
 const formData = reactive<StaticProxyPrice>({
-  uid: 0,
   type: 'hosting',
   quality: 'L3',
   area: '',
   region: '',
   price: 0
 })
-
-const accountOptions = ref<AccountOption[]>([])
 
 const qualityOptions = computed(() => {
   return formData.type === 'isp'
@@ -223,48 +191,28 @@ const filterQualityOptions = computed(() => {
 const filters = reactive({
   type: '',
   quality: '',
-  area: '',
-  uid: undefined as number | undefined
+  area: ''
 })
 const route = useRoute()
 const router = useRouter()
 
-const fetchAccounts = async () => {
-  try {
-    const res: any = await request.get('/account/list', {
-      params: {
-        page: 1,
-        size: 1000
-      }
-    })
-    accountOptions.value = (res.data.list || []).map((u: any) => ({
-      uid: u.uid,
-      email: u.email,
-      nickname: u.nickname
-    }))
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-
 const fetchList = async () => {
+  console.log('fetchList start')
   loading.value = true
   try {
-    const res = await request.get('/static-proxy-price/list', {
-      params: {
+    const params = {
         page: currentPage.value,
         size: pageSize.value,
-        uid: filters.uid ?? undefined,
         type: filters.type || undefined,
         quality: filters.quality || undefined,
         area: filters.area || undefined,
-      }
-    })
-    tableData.value = res.data.list
-    total.value = res.data.total
+    }
+    const res = await request.get('/static-proxy-price/list', { params })
+    console.log('fetchList success', res)
+    tableData.value = res.data?.list || []
+    total.value = res.data?.total || 0
   } catch (error) {
-    console.error(error)
+    console.error('Fetch list error', error)
   } finally {
     loading.value = false
   }
@@ -275,7 +223,6 @@ const syncQuery = () => {
     query: {
       page: String(currentPage.value),
       size: String(pageSize.value),
-      uid: filters.uid !== undefined ? String(filters.uid) : undefined,
       type: filters.type || undefined,
       quality: filters.quality || undefined,
       area: filters.area || undefined,
@@ -284,15 +231,15 @@ const syncQuery = () => {
 }
 
 const initFromQuery = () => {
-  const q = route.query as Record<string, any>
-  if (q.page) currentPage.value = Number(q.page) || 1
-  if (q.size) pageSize.value = Number(q.size) || 10
-  if (q.type) filters.type = String(q.type)
-  if (q.quality) filters.quality = String(q.quality)
-  if (q.area) filters.area = String(q.area)
-  if (q.uid !== undefined) {
-    const num = Number(q.uid)
-    filters.uid = Number.isNaN(num) ? undefined : num
+  try {
+    const q = route.query as Record<string, any>
+    if (q.page) currentPage.value = Number(q.page) || 1
+    if (q.size) pageSize.value = Number(q.size) || 10
+    if (q.type) filters.type = String(q.type)
+    if (q.quality) filters.quality = String(q.quality)
+    if (q.area) filters.area = String(q.area)
+  } catch (e) {
+    console.error('initFromQuery error', e)
   }
 }
 
@@ -306,8 +253,7 @@ const handleReset = () => {
   Object.assign(filters, {
     type: '',
     quality: '',
-    area: '',
-    uid: undefined
+    area: ''
   })
   currentPage.value = 1
   syncQuery()
@@ -329,7 +275,6 @@ const handleCurrentChange = (val: number) => {
 const handleAdd = () => {
   dialogType.value = 'create'
   Object.assign(formData, {
-    uid: 0,
     type: 'hosting',
     quality: 'L3',
     area: '',
@@ -338,18 +283,12 @@ const handleAdd = () => {
   })
   delete formData.id
   dialogVisible.value = true
-  if (accountOptions.value.length === 0) {
-    fetchAccounts()
-  }
 }
 
 const handleEdit = (row: StaticProxyPrice) => {
   dialogType.value = 'edit'
   Object.assign(formData, row)
   dialogVisible.value = true
-  if (accountOptions.value.length === 0) {
-    fetchAccounts()
-  }
 }
 
 const handleTypeChange = (val: string) => {
@@ -383,9 +322,10 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
+  console.log('Pricing.vue mounted')
+  mounted.value = true
   initFromQuery()
   fetchList()
-  fetchAccounts()
 })
 </script>
 
@@ -397,8 +337,8 @@ onMounted(() => {
 .filter-bar {
   margin-bottom: 12px;
   .filter-form :deep(.el-form-item) {
+    margin-bottom: 0;
     margin-right: 12px;
-    margin-bottom: 8px;
   }
 }
 
@@ -406,18 +346,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  
   .header-left {
     .title {
       font-size: 16px;
-      font-weight: 600;
-      color: #1d2129;
+      font-weight: bold;
     }
-  }
-  
-  .header-right {
-    display: flex;
-    gap: 12px;
   }
 }
 
@@ -428,20 +362,13 @@ onMounted(() => {
 }
 
 .price-text {
-  color: #ff7d00;
-  font-weight: 600;
-  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  color: #f56c6c;
 }
 
 .tips {
-  margin-left: 10px;
   font-size: 12px;
   color: #909399;
-}
-
-.form-tip {
-  font-size: 12px;
-  color: #86909c;
-  margin-top: 4px;
+  margin-left: 10px;
 }
 </style>

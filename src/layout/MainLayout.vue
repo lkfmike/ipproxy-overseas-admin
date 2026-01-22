@@ -135,7 +135,10 @@ import {
   Connection,
   Tools,
   DataLine,
-  Monitor
+  Monitor,
+  Ticket,
+  List,
+  Clock
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -167,11 +170,21 @@ const menuList = [
     path: '/customer',
     children: [
       { title: '账号信息', path: '/customer/account', icon: 'CreditCard' },
-      { title: '客户单价', path: '/customer/pricing', icon: 'Coin' }
+      { title: '客户折扣', path: '/customer/discount', icon: 'Ticket' }
     ]
   },
-  { title: '网关列表', path: '/proxy/gateway', icon: 'Connection' },
-  { title: '供应商对比', path: '/proxy/supplier-comparison', icon: 'DataLine' },
+  {
+    title: '静态代理',
+    icon: 'Monitor',
+    path: '/proxy',
+    children: [
+        { title: '网关列表', path: '/proxy/gateway', icon: 'Connection' },
+        { title: '地区单价', path: '/proxy/pricing', icon: 'Coin' },
+        { title: '订单列表', path: '/proxy/order', icon: 'List' },
+        { title: '历史记录', path: '/proxy/history', icon: 'Clock' },
+        { title: '供应商对比', path: '/proxy/supplier-comparison', icon: 'DataLine' }
+    ]
+  },
   { title: '实用工具', path: '/proxy/tools', icon: 'Tools' },
   {
     title: '系统设置',
