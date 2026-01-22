@@ -30,7 +30,6 @@
           <el-table-column prop="email" label="邮箱" min-width="180">
              <template #default="scope">
                 <div class="user-info">
-                  <el-avatar :size="24" :icon="UserFilled" class="mr-2" />
                   <span>{{ scope.row.email }}</span>
                 </div>
              </template>
@@ -237,7 +236,6 @@ import {
   Search,
   Refresh,
   DocumentCopy,
-  UserFilled,
   View,
   Money,
   Lock,

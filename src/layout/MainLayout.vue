@@ -13,8 +13,8 @@
       class="aside"
       :class="{ 'mobile-aside': isMobile, 'mobile-aside-open': isMobile && !isCollapse }"
     >
-      <div class="logo">
-        <el-icon :size="28" color="#409EFF"><Platform /></el-icon>
+      <div class="logo" @click="goHome">
+        <img src="../assets/vue.svg" alt="logo" class="logo-img" />
         <transition name="fade">
           <span class="logo-text" v-if="!isCollapse">IPProxy Admin</span>
         </transition>
@@ -27,52 +27,49 @@
         background-color="#1f2937"
         text-color="#9ca3af"
         active-text-color="#ffffff"
+        unique-opened
         router
       >
-        <el-sub-menu index="/customer">
-          <template #title>
-            <el-icon><UserFilled /></el-icon>
-            <span>客户管理</span>
-          </template>
-          <el-menu-item index="/customer/account">
-            <el-icon><CreditCard /></el-icon>
-            <template #title>账号信息</template>
-          </el-menu-item>
-          <el-menu-item index="/customer/pricing">
-            <el-icon><Coin /></el-icon>
-            <template #title>客户单价</template>
-          </el-menu-item>
-        </el-sub-menu>
+        <template v-for="item in menuList" :key="item.path">
+          <!-- Level 1 Submenu -->
+          <el-sub-menu v-if="item.children" :index="item.path">
+            <template #title>
+              <el-icon><component :is="item.icon" /></el-icon>
+              <span>{{ item.title }}</span>
+            </template>
+            
+            <template v-for="child in item.children" :key="child.path">
+              <!-- Level 2 Submenu -->
+              <el-sub-menu v-if="child.children" :index="child.path">
+                <template #title>
+                  <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
+                  <span>{{ child.title }}</span>
+                </template>
+                <!-- Level 3 Items -->
+                <el-menu-item 
+                  v-for="grandchild in child.children" 
+                  :key="grandchild.path" 
+                  :index="grandchild.path"
+                >
+                  <el-icon v-if="grandchild.icon"><component :is="grandchild.icon" /></el-icon>
+                  <template #title>{{ grandchild.title }}</template>
+                </el-menu-item>
+              </el-sub-menu>
 
-        <el-sub-menu index="/proxy">
-          <template #title>
-            <el-icon><Connection /></el-icon>
-            <span>静态代理IP</span>
-          </template>
-          <el-menu-item index="/proxy/gateway">
-            <el-icon><Connection /></el-icon>
-            <template #title>网关</template>
-          </el-menu-item>
-          <el-menu-item index="/proxy/tools">
-            <el-icon><Tools /></el-icon>
-            <template #title>工具</template>
-          </el-menu-item>
-          <el-menu-item index="/proxy/supplier-comparison">
-            <el-icon><DataLine /></el-icon>
-            <template #title>供应商对比</template>
-          </el-menu-item>
-        </el-sub-menu>
+              <!-- Level 2 Item -->
+              <el-menu-item v-else :index="child.path">
+                <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
+                <template #title>{{ child.title }}</template>
+              </el-menu-item>
+            </template>
+          </el-sub-menu>
 
-        <el-sub-menu index="/setting">
-          <template #title>
-            <el-icon><Setting /></el-icon>
-            <span>设置</span>
-          </template>
-          <el-menu-item index="/setting/static-region">
-            <el-icon><Location /></el-icon>
-            <template #title>静态地区设置</template>
+          <!-- Level 1 Item -->
+          <el-menu-item v-else :index="item.path">
+            <el-icon><component :is="item.icon" /></el-icon>
+            <template #title>{{ item.title }}</template>
           </el-menu-item>
-        </el-sub-menu>
+        </template>
       </el-menu>
     </el-aside>
 
@@ -137,7 +134,8 @@ import {
   Location,
   Connection,
   Tools,
-  DataLine
+  DataLine,
+  Monitor
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -160,6 +158,30 @@ const asideWidth = computed(() => {
   }
   return isCollapse.value ? '64px' : '240px'
 })
+
+// Menu Data Structure
+const menuList = [
+  {
+    title: '客户管理',
+    icon: 'UserFilled',
+    path: '/customer',
+    children: [
+      { title: '账号信息', path: '/customer/account', icon: 'CreditCard' },
+      { title: '客户单价', path: '/customer/pricing', icon: 'Coin' }
+    ]
+  },
+  { title: '网关列表', path: '/proxy/gateway', icon: 'Connection' },
+  { title: '供应商对比', path: '/proxy/supplier-comparison', icon: 'DataLine' },
+  { title: '实用工具', path: '/proxy/tools', icon: 'Tools' },
+  {
+    title: '系统设置',
+    icon: 'Setting',
+    path: '/setting',
+    children: [
+      { title: '地区管理', path: '/setting/static-region', icon: 'Location' }
+    ]
+  }
+]
 
 const checkMobile = () => {
   const mobile = window.innerWidth <= 768
@@ -185,6 +207,10 @@ onUnmounted(() => {
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
+}
+
+const goHome = () => {
+  router.push('/')
 }
 
 const handleCommand = (command: string) => {
@@ -247,6 +273,17 @@ const handleCommand = (command: string) => {
     gap: 12px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: #00284d;
+    }
+
+    .logo-img {
+      width: 32px;
+      height: 32px;
+    }
     
     .logo-text {
       white-space: nowrap;

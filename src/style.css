@@ -40,6 +40,30 @@
   --el-box-shadow-light: 0 2px 8px 0 rgba(0, 0, 0, 0.04) !important;
   --el-box-shadow-lighter: 0 1px 4px 0 rgba(0, 0, 0, 0.02) !important;
   --el-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.08) !important;
+
+  /* Background Colors */
+  --bg-color-page: #F2F3F5;
+  --bg-color-card: #FFFFFF;
+  --bg-color-overlay: #FFFFFF;
+  --bg-color-header: #FFFFFF;
+  
+  /* Section Backgrounds */
+  --bg-color-section: #F7F8FA; /* For filter container, connection card etc */
+  --bg-color-section-light: #F9FAFB; /* For table header */
+  
+  /* Status Colors */
+  --color-success-bg: #E8FFEA;
+  --color-success-text: #00B42A;
+  --color-danger-bg: #FFECE8;
+  --color-danger-text: #F53F3F;
+  --color-warning-bg: #FFF7E8;
+  --color-warning-text: #FF7D00;
+  
+  /* Text Colors (Alias for consistency) */
+  --text-color-primary: #1D2129;
+  --text-color-regular: #4E5969;
+  --text-color-secondary: #86909C;
+  --text-color-placeholder: #C9CDD4;
 }
 
 html, body {
@@ -47,8 +71,8 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #F2F3F5; /* Light grey business background */
-  color: #1D2129;
+  background-color: var(--bg-color-page); /* Light grey business background */
+  color: var(--text-color-primary);
 }
 
 #app {
