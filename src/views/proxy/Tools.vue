@@ -24,8 +24,38 @@
               </template>
               <el-form :model="form" :rules="rules" ref="formRef" label-position="top" class="purchase-form" size="large">
                 <el-row :gutter="24">
-                  
-
+                  <el-col :xs="24" :md="12">
+                    <el-form-item label="归属用户" prop="userId">
+                      <el-select
+                        v-model="form.userId"
+                        placeholder="搜索用户 (邮箱/UID)"
+                        filterable
+                        remote
+                        clearable
+                        :remote-method="searchUsers"
+                        :loading="userLoading"
+                        style="width: 100%"
+                        :disabled="submitting"
+                        @change="handleUserChange"
+                      >
+                        <template #prefix>
+                          <el-icon><User /></el-icon>
+                        </template>
+                        <el-option
+                          v-for="item in userList"
+                          :key="item.uid"
+                          :label="item.email"
+                          :value="item.uid"
+                        >
+                          <div class="option-item">
+                            <span class="option-label">{{ item.email }}</span>
+                            <span class="option-sub">UID: {{ item.uid }}</span>
+                          </div>
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+ 
                   <el-col :xs="24" :md="12">
                     <el-form-item label="IP类型" prop="stockType">
                       <el-radio-group v-model="form.stockType" @change="handleStockTypeChange" class="full-width-radio">
@@ -69,7 +99,7 @@
                     </el-form-item>
                   </el-col>
 
-                  <el-col :xs="24" :md="8">
+                  <el-col :xs="24" :md="12">
                     <el-form-item label="协议类型" prop="protocol">
                       <el-radio-group v-model="form.protocol" class="full-width-radio">
                         <el-radio-button label="socks5">SOCKS5</el-radio-button>
@@ -79,7 +109,7 @@
                     </el-form-item>
                   </el-col>
 
-                  <el-col :xs="24" :md="8">
+                  <el-col :xs="24" :md="12">
                     <el-form-item label="购买时长" prop="period">
                       <el-radio-group v-model="form.period" class="full-width-radio">
                         <el-radio-button :label="30">
@@ -110,7 +140,7 @@
                     </el-form-item>
                   </el-col>
 
-                  <el-col :xs="24" :md="8">
+                  <el-col :xs="24" :md="12">
                     <el-form-item label="提取数量" prop="quantity">
                       <el-input-number v-model="form.quantity" :min="1" :max="100" controls-position="right" :disabled="submitting" style="width: 100%" />
                     </el-form-item>
@@ -118,22 +148,23 @@
 
                   <el-col :xs="24" :md="12">
                     <el-form-item label="专线中转">
-                      <div class="switch-wrapper">
-                        <el-switch v-model="form.dedicatedLine" active-text="开启" inactive-text="关闭" :disabled="submitting" />
-                        <el-tooltip content="开启专线中转可提升连接稳定性，需额外支付带宽费用" placement="top">
+                      <div class="transfer-inline">
+                        <el-switch v-model="form.dedicatedLine" active-text="开启" inactive-text="关闭" :disabled="submitting || form.protocol !== 'vmess'" />
+                        <el-tooltip content="仅 VMess 可用；开启可提升稳定性，需额外带宽费用" placement="top">
                           <el-icon class="info-icon"><InfoFilled /></el-icon>
                         </el-tooltip>
+                        <el-select
+                          v-if="form.dedicatedLine && form.protocol === 'vmess'"
+                          v-model="form.bandwidth"
+                          placeholder="请选择带宽"
+                          :disabled="submitting"
+                          class="bandwidth-inline"
+                        >
+                          <el-option label="3 Mbps" value="3M" />
+                          <el-option label="5 Mbps" value="5M" />
+                          <el-option label="10 Mbps" value="10M" />
+                        </el-select>
                       </div>
-                    </el-form-item>
-                  </el-col>
-
-                  <el-col :xs="24" v-if="form.dedicatedLine">
-                    <el-form-item label="专线带宽" prop="bandwidth">
-                      <el-select v-model="form.bandwidth" placeholder="请选择带宽" :disabled="submitting" style="width: 100%">
-                        <el-option label="3 Mbps" value="3M" />
-                        <el-option label="5 Mbps" value="5M" />
-                        <el-option label="10 Mbps" value="10M" />
-                      </el-select>
                     </el-form-item>
                   </el-col>
 
@@ -374,7 +405,8 @@ const formatStockLabel = (item: any) => {
 }
 
 const handleStockTypeChange = () => {
-  form.stockId = undefined
+  const list = stocks.value[form.stockType] || []
+  form.stockId = list.length > 0 ? list[0].id : undefined
 }
 
 const selectedStock = computed(() => {
@@ -392,7 +424,10 @@ const searchUsers = async (query: string) => {
       params.email = query
     }
     const res = await request.get('/account/list', { params })
-    userList.value = res.data?.list || []
+    console.log('account/list response', res)
+    const data = res?.data || {}
+    userList.value = data.list || data.records || data.items || []
+    console.log('userList length', userList.value.length)
   } catch (error) {
     console.error('Search user error', error)
   } finally {
@@ -405,6 +440,10 @@ const fetchStocks = async () => {
     const res = await request.get('/static-proxy-order/stocks') as any
     if (res.code === 200) {
       stocks.value = res.data
+      const initialList = stocks.value[form.stockType] || []
+      if (initialList.length > 0 && !form.stockId) {
+        form.stockId = initialList[0].id
+      }
     }
   } catch (error) {
     console.error('Fetch stocks error', error)
@@ -465,6 +504,18 @@ const goToOrderList = () => {
 onMounted(() => {
   fetchStocks()
   searchUsers('')
+})
+
+watch(() => form.protocol, (p) => {
+  if (p !== 'vmess' && form.dedicatedLine) {
+    form.dedicatedLine = false
+  }
+})
+
+watch(currentStocks, (list) => {
+  if (!form.stockId && list && list.length > 0) {
+    form.stockId = list[0].id
+  }
 })
 </script>
 
@@ -552,17 +603,23 @@ onMounted(() => {
 .full-width-radio {
   display: flex;
   width: 100%;
+  flex-wrap: nowrap;
 }
 
 .full-width-radio :deep(.el-radio-button) {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .full-width-radio :deep(.el-radio-button__inner) {
   width: 100%;
-  padding: 10px 16px;
+  padding: 0 16px;
   position: relative;
   overflow: hidden;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .radio-with-badge {
@@ -571,22 +628,8 @@ onMounted(() => {
   justify-content: center;
   position: relative;
   width: 100%;
-  padding-right: 52px;
-  min-height: 28px;
-}
-
-.corner-badge {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  font-size: 11px;
-  line-height: 1;
-  padding: 2px 6px;
-  border-radius: 10px;
-  background-color: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
-  white-space: nowrap;
-  pointer-events: none;
+  padding-right: 32px;
+  height: 40px;
 }
 
 .corner-badge {
@@ -607,6 +650,16 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.transfer-inline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bandwidth-inline {
+  width: 180px;
 }
 
 .info-icon {
@@ -757,12 +810,12 @@ onMounted(() => {
   }
   
   .full-width-radio {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
   
   .full-width-radio :deep(.el-radio-button) {
-    flex: auto;
-    width: 50%;
+    flex: 1;
+    width: auto;
   }
 }
 </style>
