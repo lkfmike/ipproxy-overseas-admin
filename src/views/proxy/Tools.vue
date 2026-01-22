@@ -628,14 +628,14 @@ watch(currentStocks, (list) => {
   justify-content: center;
   position: relative;
   width: 100%;
-  padding-right: 32px;
+  padding-right: 0;
   height: 40px;
 }
 
 .corner-badge {
   position: absolute;
-  top: 2px;
-  right: 6px;
+  top: 0;
+  right: 0;
   font-size: 11px;
   line-height: 1;
   padding: 2px 6px;

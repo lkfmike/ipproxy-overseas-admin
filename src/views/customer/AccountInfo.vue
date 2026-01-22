@@ -54,24 +54,22 @@
                 {{ formatDate(scope.row.createdAt) }}
              </template>
           </el-table-column>
-          <el-table-column label="操作" width="200" fixed="right" align="center">
+          <el-table-column label="操作" width="240" fixed="right" align="center">
             <template #default="scope">
-              <el-button-group>
-                <el-tooltip content="查看详情" placement="top">
-                  <el-button link type="primary" :icon="View" @click="handleDetail(scope.row)" />
-                </el-tooltip>
-                <el-tooltip content="余额管理" placement="top">
-                  <el-button link type="warning" :icon="Money" @click="handleBalance(scope.row)" />
-                </el-tooltip>
-                <el-tooltip :content="scope.row.status === 1 ? '禁用账户' : '启用账户'" placement="top">
-                  <el-button 
-                    link 
-                    :type="scope.row.status === 1 ? 'danger' : 'success'" 
-                    :icon="scope.row.status === 1 ? 'Lock' : 'Unlock'"
-                    @click="handleStatusChange(scope.row)"
-                  />
-                </el-tooltip>
-              </el-button-group>
+              <div class="op-group">
+                <el-button text bg size="small" :icon="View" @click="handleDetail(scope.row)">详情</el-button>
+                <el-button text bg type="warning" size="small" :icon="Money" @click="handleBalance(scope.row)">余额</el-button>
+                <el-button 
+                  text 
+                  bg 
+                  :type="scope.row.status === 1 ? 'danger' : 'success'" 
+                  size="small" 
+                  :icon="scope.row.status === 1 ? Lock : Unlock"
+                  @click="handleStatusChange(scope.row)"
+                >
+                  {{ scope.row.status === 1 ? '禁用' : '启用' }}
+                </el-button>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -648,6 +646,20 @@ onUnmounted(() => {
       padding: 4px 8px;
       height: 24px;
     }
+  }
+}
+
+.op-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  
+  :deep(.el-button) {
+    padding: 4px 10px;
+    height: 26px;
+    border-radius: 6px;
   }
 }
 
