@@ -1,90 +1,80 @@
 <template>
   <div class="page-container">
-    <div class="page-header">
-      <div class="header-left">
-        <h1 class="page-title">异步订单列表</h1>
-        <p class="page-subtitle">查看所有异步订单记录</p>
-      </div>
-      <div class="header-right">
-        <el-tooltip content="刷新数据" placement="bottom">
-          <el-button :icon="Refresh" circle size="large" class="refresh-btn" @click="handleRefresh" :loading="loading" />
-        </el-tooltip>
-      </div>
-    </div>
+    <el-card class="box-card" shadow="never">
+      <template #header>
+        <div class="card-header">
+          <div class="header-left">
+            <span class="title">异步订单管理</span>
+            <el-tag type="info" size="small" effect="plain" class="count-tag">共 {{ pagination.total }} 条数据</el-tag>
+          </div>
+        </div>
+      </template>
 
-    <div class="main-content">
-      <el-card class="filter-card" shadow="hover">
-        <el-form :model="filterForm" class="filter-form" label-position="top">
-          <el-row :gutter="24">
-            <el-col :xs="24" :sm="12" :md="6" :lg="6">
-              <el-form-item label="归属用户">
-                <el-select
-                  v-model="filterForm.uid"
-                  placeholder="搜索用户"
-                  filterable
-                  remote
-                  clearable
-                  :remote-method="searchUsers"
-                  :loading="userLoading"
-                  class="filter-select"
-                  style="width: 100%"
-                >
-                  <el-option
-                    v-for="item in userList"
-                    :key="item.uid"
-                    :label="item.email + ' (UID: ' + item.uid + ')'"
-                    :value="item.uid"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6">
-              <el-form-item label="订单号">
-                <el-input v-model="filterForm.orderNo" placeholder="供应商订单号" clearable />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6">
-              <el-form-item label="订单状态">
-                <el-select v-model="filterForm.status" placeholder="全部状态" clearable style="width: 100%">
-                  <el-option label="Pending" value="pending" />
-                  <el-option label="Processing" value="processing" />
-                  <el-option label="Completed" value="completed" />
-                  <el-option label="Failed" value="failed" />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="24" :md="6" :lg="6" class="filter-actions">
-              <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
-              <el-button :icon="RefreshLeft" @click="resetSearch">重置</el-button>
-            </el-col>
-          </el-row>
+      <div class="filter-container">
+        <el-form :inline="true" :model="filterForm">
+          <el-form-item label="归属用户">
+            <el-select
+              v-model="filterForm.uid"
+              placeholder="搜索用户"
+              filterable
+              remote
+              clearable
+              :remote-method="searchUsers"
+              :loading="userLoading"
+              style="width: 240px"
+            >
+              <el-option
+                v-for="item in userList"
+                :key="item.uid"
+                :label="item.email + ' (UID: ' + item.uid + ')'"
+                :value="item.uid"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="订单号">
+            <el-input v-model="filterForm.orderNo" placeholder="系统或供应商订单号" clearable style="width: 240px" />
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="filterForm.status" placeholder="全部状态" clearable style="width: 180px">
+              <el-option label="Pending" value="pending" />
+              <el-option label="Processing" value="processing" />
+              <el-option label="Completed" value="completed" />
+              <el-option label="Failed" value="failed" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
+            <el-button :icon="Refresh" @click="resetSearch">重置</el-button>
+          </el-form-item>
         </el-form>
-      </el-card>
+      </div>
 
-      <el-card class="table-card" shadow="hover" :body-style="{ padding: '0' }">
-        <el-table :data="tableData" style="width: 100%" v-loading="loading">
-          <el-table-column prop="id" label="ID" width="80" />
-          <el-table-column label="订单号" width="200">
+      <div v-loading="loading">
+        <el-table :data="tableData" style="width: 100%" stripe border>
+          <el-table-column prop="id" label="ID" width="80" align="center" />
+          <el-table-column label="订单号" min-width="220">
             <template #default="scope">
               <div>System: {{ scope.row.systemOrderNo }}</div>
               <div v-if="scope.row.orderNo" class="text-xs text-gray">Vendor: {{ scope.row.orderNo }}</div>
             </template>
           </el-table-column>
-          <el-table-column label="用户" width="200">
+          <el-table-column label="用户" min-width="180">
             <template #default="scope">
-              <div>UID: {{ scope.row.uid }}</div>
+              <div>
+                <div class="text-bold" :title="scope.row.email || '-'">{{ scope.row.email || '-' }}</div>
+              </div>
             </template>
           </el-table-column>
-          <el-table-column label="价格/数量" width="150">
+          <el-table-column label="价格/数量" min-width="160" align="right">
             <template #default="scope">
-              <div>Total: {{ scope.row.totalPrice }}</div>
+              <span class="price text-bold">${{ Number(scope.row.totalPrice || 0).toFixed(2) }}</span>
               <div class="text-xs text-gray">Unit: {{ scope.row.unitPrice }} x {{ scope.row.quantity }}</div>
             </template>
           </el-table-column>
-          <el-table-column label="配置详情" min-width="200">
+          <el-table-column label="配置详情" min-width="220">
             <template #default="scope">
-              <el-tag size="small" class="mr-1">{{ scope.row.protocol }}</el-tag>
-              <el-tag size="small" type="success" class="mr-1">{{ scope.row.asnType }}</el-tag>
+              <el-tag size="small" class="mr-1">{{ scope.row.protocol?.toUpperCase() }}</el-tag>
+              <el-tag size="small" type="success" class="mr-1">{{ formatAsnType(scope.row.asnType) }}</el-tag>
               <el-tag size="small" type="warning" class="mr-1">{{ scope.row.quality }}</el-tag>
               <div class="mt-1 text-xs">
                 <span v-if="scope.row.dedicatedLine">专线({{ scope.row.bandwidth }})</span>
@@ -93,55 +83,56 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="orderType" label="类型" width="100">
-             <template #default="scope">
-                <el-tag :type="scope.row.orderType === 'purchase' ? 'success' : 'warning'">
-                  {{ scope.row.orderType }}
-                </el-tag>
-             </template>
+          <el-table-column prop="orderType" label="类型" width="110" align="center">
+            <template #default="scope">
+              <el-tag :type="scope.row.orderType === 'purchase' ? 'success' : 'warning'">
+                {{ scope.row.orderType }}
+              </el-tag>
+            </template>
           </el-table-column>
-          <el-table-column label="时间" width="180">
+          <el-table-column label="时间" min-width="200">
             <template #default="scope">
               <div>Created: {{ formatTime(scope.row.createdAt) }}</div>
               <div v-if="scope.row.finishTime" class="text-xs text-gray">Finish: {{ formatTime(scope.row.finishTime) }}</div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" label="状态" width="100">
+          <el-table-column prop="status" label="状态" width="120" align="center">
             <template #default="scope">
               <el-tag :type="getStatusType(scope.row.status)">{{ scope.row.status }}</el-tag>
             </template>
           </el-table-column>
         </el-table>
-        
-        <div class="pagination-container">
-          <el-pagination
-            v-model:current-page="pagination.page"
-            v-model:page-size="pagination.size"
-            :total="pagination.total"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </div>
-      </el-card>
-    </div>
+      </div>
+
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="pagination.page"
+          v-model:page-size="pagination.size"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="pagination.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          background
+        />
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { Search, Refresh, RefreshLeft } from '@element-plus/icons-vue'
+import { Search, Refresh } from '@element-plus/icons-vue'
 import request from '../../utils/request'
 import dayjs from 'dayjs'
 
 const loading = ref(false)
 const userLoading = ref(false)
 const userList = ref<any[]>([])
-const tableData = ref([])
+const tableData = ref<any[]>([])
 
 const filterForm = reactive({
-  uid: undefined,
+  uid: undefined as number | undefined,
   orderNo: '',
   status: ''
 })
@@ -165,7 +156,6 @@ const searchUsers = async (query: string) => {
     const res = await request.get('/account/list', { params })
     userList.value = res.data?.list || []
   } catch (error) {
-    console.error('Search user error', error)
   } finally {
     userLoading.value = false
   }
@@ -178,14 +168,13 @@ const fetchData = async () => {
       page: pagination.page,
       size: pagination.size,
       uid: filterForm.uid,
-      orderNo: filterForm.orderNo,
-      status: filterForm.status
+      status: filterForm.status,
+      orderNo: filterForm.orderNo
     }
     const res = await request.get('/async-order/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (error) {
-    console.error('Fetch data error', error)
   } finally {
     loading.value = false
   }
@@ -201,10 +190,6 @@ const resetSearch = () => {
   filterForm.orderNo = ''
   filterForm.status = ''
   handleSearch()
-}
-
-const handleRefresh = () => {
-  fetchData()
 }
 
 const handleSizeChange = (val: number) => {
@@ -231,61 +216,89 @@ const getStatusType = (status: string) => {
   }
 }
 
+const formatAsnType = (val: string) => {
+  if (!val) return '-'
+  const t = val.toLowerCase()
+  if (t === 'l4' || t === 'ispl4' || t === 'isp-l4') return '原生'
+  if (t === 'l3' || t === 'ispl3' || t === 'isp-l3') return '普通'
+  return val
+}
+
 onMounted(() => {
   fetchData()
-  searchUsers('') // Load initial user list
+  searchUsers('')
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .page-container {
-  padding: 24px;
 }
-.page-header {
+
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-}
-.page-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0;
-}
-.page-subtitle {
-  color: #909399;
-  margin: 8px 0 0;
-}
-.filter-card {
-  margin-bottom: 24px;
-}
-.pagination-container {
-  .filter-form :deep(.el-row) {
-    align-items: flex-end;
-  }
-  .filter-actions {
+
+  .header-left {
     display: flex;
-    align-items: flex-end;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1d2129;
+    }
+
+    .count-tag {
+      font-weight: normal;
+    }
   }
+}
+
+.filter-container {
+  margin-bottom: 24px;
+  background-color: #f7f8fa;
   padding: 16px;
+  border-radius: 4px;
+
+  :deep(.el-form-item) {
+    margin-bottom: 0;
+    margin-right: 24px;
+  }
+}
+
+.pagination-container {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
-.text-xs {
+
+.price {
+  color: #ff7d00;
+  font-family: 'Roboto', sans-serif;
 }
+
+.text-bold {
+  font-weight: 600;
+}
+
 .text-xs {
   font-size: 12px;
 }
+
 .text-gray {
   color: #909399;
 }
+
 .mr-1 {
   margin-right: 4px;
 }
+
 .mt-1 {
   margin-top: 4px;
 }
+
 .ml-2 {
   margin-left: 8px;
 }

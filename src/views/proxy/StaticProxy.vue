@@ -12,9 +12,6 @@
           新增IP资源
         </el-button>
         -->
-        <el-tooltip content="刷新数据" placement="bottom">
-          <el-button :icon="Refresh" circle size="large" class="refresh-btn" @click="handleRefresh" :loading="loading" />
-        </el-tooltip>
       </div>
     </div>
 
@@ -61,18 +58,6 @@
             <el-col :xs="24" :sm="12" :md="6" :lg="4">
               <el-form-item label="备注">
                 <el-input v-model="filterForm.remark" placeholder="输入备注" clearable :prefix-icon="Edit" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="4">
-              <el-form-item label="资源状态">
-                <el-select v-model="filterForm.status" placeholder="全部状态" clearable class="filter-select">
-                  <el-option label="活跃运行中" value="active">
-                    <span class="status-option active">活跃运行中</span>
-                  </el-option>
-                  <el-option label="已过期" value="expired">
-                    <span class="status-option expired">已过期</span>
-                  </el-option>
-                </el-select>
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="24" :md="24" :lg="4" class="filter-actions">
@@ -158,6 +143,16 @@
               </template>
             </el-table-column>
 
+            <el-table-column label="自动续费" width="130" align="center">
+              <template #default="scope">
+                <el-switch
+                  v-model="scope.row.autoRenew"
+                  :loading="autoRenewUpdating.has(scope.row.id)"
+                  @change="(val: boolean) => handleToggleAutoRenew(scope.row, val)"
+                />
+              </template>
+            </el-table-column>
+
             <el-table-column label="归属用户" min-width="140" class-name="hidden-xs-only">
               <template #default="scope">
                 <div v-if="scope.row.uid" class="user-info-cell">
@@ -169,14 +164,6 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="status" label="状态" width="80" align="center">
-              <template #default="scope">
-                <div class="status-badge simple" :class="scope.row.status">
-                  <span class="dot"></span>
-                  <span class="text">{{ scope.row.status === 'active' ? '活跃' : '过期' }}</span>
-                </div>
-              </template>
-            </el-table-column>
 
             <el-table-column label="创建时间" width="160" class-name="hidden-xs-only">
                <template #default="scope">
@@ -201,13 +188,9 @@
                   <el-button link type="primary" :icon="Edit" @click="handleEdit(scope.row)">
                     编辑
                   </el-button>
-                  <el-popconfirm title="确定删除该资源吗？" @confirm="handleDelete(scope.row)" width="200">
-                    <template #reference>
-                      <el-button link type="danger" :icon="Delete">
-                        删除
-                      </el-button>
-                    </template>
-                  </el-popconfirm>
+                  <el-button link type="danger" :icon="Delete" @click="handleDeleteConfirm(scope.row)">
+                    删除
+                  </el-button>
                 </div>
               </template>
             </el-table-column>
@@ -294,6 +277,14 @@
                 <span class="dot"></span>
                 <span class="text">{{ currentDetail.status === 'active' ? '活跃' : '过期' }}</span>
               </div>
+            </div>
+            <div class="info-item">
+              <span class="label">是否专线</span>
+              <span class="value">{{ currentDetail.dedicatedLine ? '是' : '否' }}</span>
+            </div>
+            <div class="info-item" v-if="currentDetail.dedicatedLine">
+              <span class="label">带宽</span>
+              <span class="value">{{ currentDetail.bandwidth || '-' }}</span>
             </div>
             <div class="info-item">
               <span class="label">地区</span>
@@ -597,7 +588,6 @@ const handleSelectionChange = (val: any[]) => {
 const filterForm = reactive({
   uid: undefined,
   ip: '',
-  status: '',
   area: '',
   remark: ''
 })
@@ -641,7 +631,6 @@ const fetchData = async () => {
         size: pageSize.value,
         uid: filterForm.uid || undefined,
         ip: filterForm.ip || undefined,
-        status: filterForm.status || undefined,
         area: filterForm.area || undefined,
         remark: filterForm.remark || undefined
       }
@@ -671,7 +660,6 @@ const handleRefresh = () => {
 const resetSearch = () => {
   filterForm.uid = undefined
   filterForm.ip = ''
-  filterForm.status = ''
   filterForm.area = ''
   filterForm.remark = ''
   handleSearch()
@@ -700,6 +688,35 @@ const handleViewDetail = async (row: any) => {
   currentQrType.value = ''
 }
 
+const isRowOperable = (row: any) => !!row.uid
+const isRowSelectable = (row: any, _index: number) => isRowOperable(row)
+
+const autoRenewUpdating = ref(new Set<number>())
+const handleToggleAutoRenew = async (row: any, val: boolean) => {
+  if (!isRowOperable(row)) {
+    ElMessage.warning('已释放网关不可操作')
+    row.autoRenew = !val
+    return
+  }
+  autoRenewUpdating.value.add(row.id)
+  try {
+    const res = await request.post('/gateway/update', { id: row.id, autoRenew: val })
+    const data = res as any
+    if (data.code !== 200) {
+      row.autoRenew = !val
+      ElMessage.error(data.message || '更新自动续费失败')
+      return
+    }
+    ElMessage.success('自动续费已更新')
+  } catch (e) {
+    console.error('update autoRenew error:', e)
+    row.autoRenew = !val
+    ElMessage.error('更新自动续费失败')
+  } finally {
+    autoRenewUpdating.value.delete(row.id)
+  }
+}
+
 const showQrCode = async (type: string) => {
   const link = type === 'v2rayNG' ? currentDetail.value.v2rayNG : currentDetail.value.shadowRockets
   if (!link) {
@@ -725,6 +742,10 @@ const showQrCode = async (type: string) => {
 
 
 const handleEdit = (row: any) => {
+  if (!isRowOperable(row)) {
+    ElMessage.warning('已释放网关不可操作')
+    return
+  }
   dialogType.value = 'edit'
   Object.assign(formData, row)
   if (row.expireTime) {
@@ -783,6 +804,29 @@ const handleDelete = async (row: any) => {
   } catch (error) {
     console.error(error)
     ElMessage.error('删除失败')
+  }
+}
+
+const handleDeleteConfirm = async (row: any) => {
+  if (!isRowOperable(row)) {
+    ElMessage.warning('已释放网关不可操作')
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      `即将删除出口IP：${row.ip}`,
+      '确认删除',
+      {
+        confirmButtonText: '删除',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true,
+        customClass: 'confirm-dialog'
+      }
+    )
+    await handleDelete(row)
+  } catch {
+    // canceled
   }
 }
 
@@ -1135,6 +1179,38 @@ const copyToClipboard = async (text: string) => {
     display: flex;
     justify-content: center;
     gap: 8px;
+  }
+  
+  :deep(.el-message-box.confirm-dialog) {
+    width: auto;
+    max-width: 520px;
+    min-width: 320px;
+    margin: 0 16px;
+    border-radius: 12px;
+    animation: confirm-fade-in 200ms ease-out;
+  }
+  :deep(.el-message-box.confirm-dialog .el-message-box__title) {
+    font-weight: 700;
+  }
+  :deep(.el-message-box.confirm-dialog .el-message-box__message) {
+    white-space: pre-line;
+    line-height: 1.6;
+    font-size: 14px;
+    color: var(--text-color-primary);
+    padding-top: 4px;
+  }
+  :deep(.el-message-box.confirm-dialog .el-message-box__btns .el-button) {
+    padding: 8px 16px;
+    border-radius: 8px;
+  }
+  @keyframes confirm-fade-in {
+    from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :deep(.el-message-box.confirm-dialog) {
+      animation: none;
+    }
   }
   
   /* Footer & Pagination */
