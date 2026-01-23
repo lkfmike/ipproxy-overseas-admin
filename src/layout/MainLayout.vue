@@ -123,18 +123,15 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
-  Platform, 
   UserFilled, 
   CreditCard, 
   Coin, 
   Fold, 
   Expand, 
   ArrowDown,
-  Setting,
   Location,
   Connection,
   Tools,
-  DataLine,
   Monitor,
   Ticket,
   List,
@@ -163,27 +160,33 @@ const asideWidth = computed(() => {
 })
 
 // Menu Data Structure
-const menuList = [
+interface MenuItem {
+  title: string
+  path: string
+  icon?: any
+  children?: MenuItem[]
+}
+const menuList: MenuItem[] = [
   {
     title: '客户管理',
-    icon: 'UserFilled',
+    icon: UserFilled,
     path: '/customer',
     children: [
-      { title: '账号信息', path: '/customer/account', icon: 'CreditCard' },
-      { title: '客户折扣', path: '/customer/discount', icon: 'Ticket' }
+      { title: '账号信息', path: '/customer/account', icon: CreditCard },
+      { title: '客户折扣', path: '/customer/discount', icon: Ticket }
     ]
   },
   {
     title: '静态代理',
-    icon: 'Monitor',
+    icon: Monitor,
     path: '/proxy',
     children: [
-        { title: '网关列表', path: '/proxy/gateway', icon: 'Connection' },
-        { title: '地区单价', path: '/proxy/pricing', icon: 'Coin' },
-        { title: '地区管理', path: '/setting/static-region', icon: 'Location' },
-        { title: '订单列表', path: '/proxy/order', icon: 'List' },
-            { title: '已释放网关', path: '/proxy/history', icon: 'Clock' },
-            { title: 'IP提取', path: '/proxy/tools', icon: 'Tools' }
+        { title: '网关列表', path: '/proxy/gateway', icon: Connection },
+        { title: '地区单价', path: '/proxy/pricing', icon: Coin },
+        { title: '地区管理', path: '/setting/static-region', icon: Location },
+        { title: '订单列表', path: '/proxy/order', icon: List },
+            { title: '已释放网关', path: '/proxy/history', icon: Clock },
+            { title: 'IP提取', path: '/proxy/tools', icon: Tools }
     ]
   },
   

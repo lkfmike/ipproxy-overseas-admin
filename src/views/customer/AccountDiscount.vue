@@ -291,7 +291,7 @@ const handleDelete = (row: AccountDiscount) => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  await formRef.value.validate(async (valid, fields) => {
+  await formRef.value.validate(async (valid) => {
     if (valid) {
       try {
         const url = dialogType.value === 'create' ? '/account-discount/create' : '/account-discount/update'

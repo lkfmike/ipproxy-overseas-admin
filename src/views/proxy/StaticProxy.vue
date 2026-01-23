@@ -481,7 +481,6 @@ import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import { 
   Search, 
-  Refresh, 
   Download,
   Edit, 
   Delete, 
@@ -653,9 +652,6 @@ const handleSearch = () => {
   fetchData()
 }
 
-const handleRefresh = () => {
-  fetchData()
-}
 
 const resetSearch = () => {
   filterForm.uid = undefined
@@ -689,7 +685,6 @@ const handleViewDetail = async (row: any) => {
 }
 
 const isRowOperable = (row: any) => !!row.uid
-const isRowSelectable = (row: any, _index: number) => isRowOperable(row)
 
 const autoRenewUpdating = ref(new Set<number>())
 const handleToggleAutoRenew = async (row: any, val: boolean) => {
