@@ -115,7 +115,7 @@
                   <el-tag :type="getProtocolTagType(scope.row.protocol)" effect="light" round size="small">
                     {{ scope.row.protocol ? scope.row.protocol.toUpperCase() : 'UNKNOWN' }}
                   </el-tag>
-                  <el-dropdown trigger="click" @command="(cmd) => handleDownloadQr(scope.row, cmd)">
+                  <el-dropdown trigger="click" @command="onQrCommand(scope.row, $event)">
                     <div class="qr-action">
                       <el-icon><Download /></el-icon>
                     </div>
@@ -232,6 +232,9 @@
                   </el-button>
                   <el-button type="primary" plain size="default" @click="handleBatchDownloadQr('shadowRockets')">
                     <el-icon class="el-icon--left"><Download /></el-icon>ShadowRocket ZIP
+                  </el-button>
+                  <el-button type="primary" plain size="default" @click="handleBatchRenew">
+                    <el-icon class="el-icon--left"><RefreshLeft /></el-icon>批量续费
                   </el-button>
                 </div>
               </div>
@@ -488,14 +491,11 @@ import { saveAs } from 'file-saver'
 import { 
   Search, 
   Refresh, 
-  Plus, 
   Download,
   Edit, 
   Delete, 
   CopyDocument, 
   Monitor, 
-  Check, 
-  Warning,
   User,
   Connection, 
   RefreshLeft,
@@ -723,27 +723,6 @@ const showQrCode = async (type: string) => {
   }
 }
 
-const handleCreate = () => {
-  dialogType.value = 'create'
-  Object.assign(formData, {
-    id: undefined,
-    uid: undefined,
-    ip: '',
-    port: 8080,
-    gateway: '',
-    area: '',
-    region: '',
-    protocol: 'http',
-    status: 'active',
-    authUser: '',
-    authPassword: '',
-    expireTime: '',
-    remark: '',
-    autoRenew: false,
-    dedicatedLine: false
-  })
-  dialogVisible.value = true
-}
 
 const handleEdit = (row: any) => {
   dialogType.value = 'edit'
@@ -861,6 +840,46 @@ const handleDownloadQr = async (row: any, type: string) => {
         console.error('Single download error:', e)
         ElMessage.error('生成二维码失败')
     }
+}
+
+const onQrCommand = (row: any, cmd: string) => {
+  handleDownloadQr(row, cmd)
+}
+
+const handleBatchRenew = async () => {
+  if (!selectedRows.value.length) return
+  const items = selectedRows.value.filter((r: any) => r.uid && r.id)
+  if (!items.length) {
+    ElMessage.warning('请选择已分配用户的IP进行续费')
+    return
+  }
+  try {
+    // 仅允许同一UID批量续费
+    const uidSet = new Set(items.map((i: any) => i.uid))
+    if (uidSet.size !== 1) {
+      ElMessage.error('请选择同一用户的IP进行批量续费')
+      return
+    }
+    const uid = Number(items[0].uid)
+    const ids = items.map((i: any) => i.id)
+    await ElMessageBox.confirm(`将为 UID=${uid} 的 ${ids.length} 项执行批量续费。是否继续？`, '提示', { type: 'warning' })
+    try {
+      const res = await request.post('/gateway/batch-renew', { ids, uid })
+      const data = res as any
+      if (data.code !== 200) {
+        ElMessage.error(data.message || '续费失败')
+        return
+      }
+      ElMessage.success('批量续费成功')
+      fetchData()
+    } catch (e: any) {
+      console.error('batch renew error:', e)
+      ElMessage.error(e?.message || '续费请求失败')
+    }
+  } catch (err) {
+    console.error('batch renew unexpected error:', err)
+    ElMessage.error('批量续费失败')
+  }
 }
 
 const copyToClipboard = async (text: string) => {

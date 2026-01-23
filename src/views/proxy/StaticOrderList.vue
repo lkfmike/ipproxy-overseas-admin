@@ -72,8 +72,7 @@
           </el-table-column>
           <el-table-column label="用户" width="200">
             <template #default="scope">
-              <div>{{ scope.row.email }}</div>
-              <div class="text-xs text-gray">UID: {{ scope.row.uid }}</div>
+              <div>UID: {{ scope.row.uid }}</div>
             </template>
           </el-table-column>
           <el-table-column label="价格/数量" width="150">
@@ -261,9 +260,19 @@ onMounted(() => {
   margin-bottom: 24px;
 }
 .pagination-container {
+  .filter-form :deep(.el-row) {
+    align-items: flex-end;
+  }
+  .filter-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
   padding: 16px;
   display: flex;
   justify-content: flex-end;
+}
+.text-xs {
 }
 .text-xs {
   font-size: 12px;
