@@ -180,19 +180,13 @@ const menuList = [
     children: [
         { title: '网关列表', path: '/proxy/gateway', icon: 'Connection' },
         { title: '地区单价', path: '/proxy/pricing', icon: 'Coin' },
+        { title: '地区管理', path: '/setting/static-region', icon: 'Location' },
         { title: '订单列表', path: '/proxy/order', icon: 'List' },
-            { title: '已释放网关', path: '/proxy/history', icon: 'Clock' }
+            { title: '已释放网关', path: '/proxy/history', icon: 'Clock' },
+            { title: 'IP提取', path: '/proxy/tools', icon: 'Tools' }
     ]
   },
-  { title: '实用工具', path: '/proxy/tools', icon: 'Tools' },
-  {
-    title: '系统设置',
-    icon: 'Setting',
-    path: '/setting',
-    children: [
-      { title: '地区管理', path: '/setting/static-region', icon: 'Location' }
-    ]
-  }
+  
 ]
 
 const checkMobile = () => {

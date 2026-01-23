@@ -178,15 +178,15 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="创建时间" width="110" class-name="hidden-xs-only">
+            <el-table-column label="创建时间" width="160" class-name="hidden-xs-only">
                <template #default="scope">
-                 <span class="font-mono">{{ formatDate(scope.row.createdAt).split(' ')[0] }}</span>
+                 <span class="font-mono">{{ formatDate(scope.row.createdAt) }}</span>
                </template>
             </el-table-column>
 
-            <el-table-column label="到期时间" width="110" class-name="hidden-xs-only">
+            <el-table-column label="到期时间" width="160" class-name="hidden-xs-only">
                <template #default="scope">
-                 <span class="font-mono">{{ formatDate(scope.row.expireTime).split(' ')[0] }}</span>
+                 <span class="font-mono">{{ formatDate(scope.row.expireTime) }}</span>
                </template>
             </el-table-column>
 
@@ -398,7 +398,7 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="IP地址" prop="ip">
-              <el-input v-model="formData.ip" placeholder="IPv4地址" />
+              <el-input v-model="formData.ip" placeholder="IPv4地址" :disabled="dialogType === 'edit'" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -419,6 +419,7 @@
               <el-select v-model="formData.protocol" placeholder="选择协议" style="width: 100%">
                 <el-option label="HTTP" value="http" />
                 <el-option label="SOCKS5" value="socks5" />
+                <el-option label="VMESS" value="vmess" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -446,6 +447,21 @@
           <el-col :span="12">
             <el-form-item label="具体区域" prop="region">
               <el-input v-model="formData.region" placeholder="城市/州/省" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="到期时间" prop="expireTime">
+              <el-date-picker
+                v-model="formData.expireTime"
+                type="datetime"
+                placeholder="选择到期时间"
+                style="width: 100%"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm:ss"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -732,6 +748,11 @@ const handleCreate = () => {
 const handleEdit = (row: any) => {
   dialogType.value = 'edit'
   Object.assign(formData, row)
+  if (row.expireTime) {
+    formData.expireTime = dayjs(row.expireTime).format('YYYY-MM-DD HH:mm:ss')
+  } else {
+    formData.expireTime = ''
+  }
   dialogVisible.value = true
   // Check if current user is in userList, if not add it temporarily so it displays correctly
   if (row.uid && !userList.value.find((u: any) => u.uid === row.uid)) {
@@ -748,8 +769,13 @@ const handleSubmit = async () => {
         const url = dialogType.value === 'create' 
           ? '/gateway/create' 
           : '/gateway/update'
-        
-        const res = await request.post(url, formData)
+        const payload: any = { ...formData }
+        if (payload.expireTime) {
+          payload.expireTime = dayjs(payload.expireTime).format('YYYY-MM-DD HH:mm:ss')
+        } else {
+          payload.expireTime = null
+        }
+        const res = await request.post(url, payload)
         
         const data = res as any
         if (data.code === 200) {

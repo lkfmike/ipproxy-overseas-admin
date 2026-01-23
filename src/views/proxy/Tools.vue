@@ -220,6 +220,10 @@
                   <span class="label">购买时长</span>
                   <span class="value">{{ form.period }} 天</span>
                 </div>
+                <div class="summary-item" v-if="priceDetail && priceDetail.daysDiscountRate < 1">
+                  <span class="label">时长折扣</span>
+                  <span class="value success-text">{{ (priceDetail.daysDiscountRate * 10).toFixed(1) }} 折</span>
+                </div>
                 <div class="summary-item">
                   <span class="label">提取数量</span>
                   <span class="value highlight">{{ form.quantity }} 个</span>
@@ -228,10 +232,6 @@
                 <div class="summary-item" v-if="priceDetail">
                   <span class="label">基础单价</span>
                   <span class="value">¥ {{ priceDetail.userBasePrice }} / 30天</span>
-                </div>
-                <div class="summary-item" v-if="priceDetail && priceDetail.daysDiscountRate < 1">
-                  <span class="label">时长折扣</span>
-                  <span class="value success-text">{{ (priceDetail.daysDiscountRate * 10).toFixed(1) }} 折</span>
                 </div>
                 <div class="summary-item" v-if="priceDetail && form.dedicatedLine">
                   <span class="label">专线费用</span>
@@ -626,14 +626,14 @@ watch(currentStocks, (list) => {
   justify-content: center;
   position: relative;
   width: 100%;
-  padding-right: 0;
+  padding-right: 28px;
   height: 40px;
 }
 
 .corner-badge {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -8px;
+  right: 2px;
   font-size: 11px;
   line-height: 1;
   padding: 2px 6px;
@@ -642,6 +642,7 @@ watch(currentStocks, (list) => {
   color: var(--el-color-primary);
   white-space: nowrap;
   pointer-events: none;
+  z-index: 10;
 }
 
 .switch-wrapper {
@@ -696,6 +697,18 @@ watch(currentStocks, (list) => {
   flex-direction: column;
   gap: 16px;
   margin-bottom: 24px;
+}
+
+:deep(.el-radio-button) {
+  overflow: visible;
+}
+
+:deep(.el-radio-button__inner) {
+  overflow: visible;
+}
+
+.full-width-radio {
+  overflow: visible;
 }
 
 .summary-item {

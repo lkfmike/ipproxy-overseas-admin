@@ -70,7 +70,7 @@ const routes = [
             path: 'tools',
             name: 'StaticProxyTools',
             component: () => import('../views/proxy/Tools.vue'),
-            meta: { title: '工具' }
+            meta: { title: 'IP提取' }
           }
         ]
       },
