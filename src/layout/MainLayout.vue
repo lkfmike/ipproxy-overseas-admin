@@ -181,8 +181,7 @@ const menuList = [
         { title: '网关列表', path: '/proxy/gateway', icon: 'Connection' },
         { title: '地区单价', path: '/proxy/pricing', icon: 'Coin' },
         { title: '订单列表', path: '/proxy/order', icon: 'List' },
-        { title: '历史记录', path: '/proxy/history', icon: 'Clock' },
-        { title: '供应商对比', path: '/proxy/supplier-comparison', icon: 'DataLine' }
+            { title: '已释放网关', path: '/proxy/history', icon: 'Clock' }
     ]
   },
   { title: '实用工具', path: '/proxy/tools', icon: 'Tools' },

@@ -90,9 +90,7 @@
                         >
                           <div class="option-item">
                             <span class="option-label">{{ formatStockLabel(item) }}</span>
-                            <el-tag size="small" :type="item.inventory > 0 ? 'success' : 'danger'" effect="light">
-                              库存: {{ item.inventory }}
-                            </el-tag>
+                            <span class="option-sub">{{ item.inventory }}</span>
                           </div>
                         </el-option>
                       </el-select>

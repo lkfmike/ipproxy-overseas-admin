@@ -64,19 +64,13 @@ const routes = [
             path: 'history',
             name: 'StaticProxyHistory',
             component: () => import('../views/proxy/StaticProxyHistory.vue'),
-            meta: { title: '历史记录' }
+            meta: { title: '已释放网关' }
           },
           {
             path: 'tools',
             name: 'StaticProxyTools',
             component: () => import('../views/proxy/Tools.vue'),
             meta: { title: '工具' }
-          },
-          {
-            path: 'supplier-comparison',
-            name: 'StaticProxySupplierComparison',
-            component: () => import('../views/proxy/SupplierComparison.vue'),
-            meta: { title: '供应商对比' }
           }
         ]
       },

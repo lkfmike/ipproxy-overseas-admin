@@ -31,9 +31,10 @@
         v-loading="loading" 
         stripe
       >
-        <el-table-column prop="uid" label="用户" min-width="200">
+        <el-table-column prop="uid" label="UID" width="100" align="center" />
+        <el-table-column prop="email" label="邮箱" min-width="220">
           <template #default="scope">
-            {{ scope.row.email ? `${scope.row.email} (UID: ${scope.row.uid})` : scope.row.uid }}
+            {{ scope.row.email || '-' }}
           </template>
         </el-table-column>
         <el-table-column prop="staticResidentialDiscount" label="静态住宅折扣" width="150" align="center">
