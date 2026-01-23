@@ -607,13 +607,14 @@ watch(currentStocks, (list) => {
 .full-width-radio :deep(.el-radio-button) {
   flex: 1 1 0;
   min-width: 0;
+  overflow: visible;
 }
 
 .full-width-radio :deep(.el-radio-button__inner) {
   width: 100%;
   padding: 0 16px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   height: 40px;
   display: flex;
   align-items: center;
@@ -632,8 +633,8 @@ watch(currentStocks, (list) => {
 
 .corner-badge {
   position: absolute;
-  top: -8px;
-  right: 2px;
+  top: -12px;
+  right: -5px;
   font-size: 11px;
   line-height: 1;
   padding: 2px 6px;
@@ -642,7 +643,8 @@ watch(currentStocks, (list) => {
   color: var(--el-color-primary);
   white-space: nowrap;
   pointer-events: none;
-  z-index: 10;
+  z-index: 99;
+  border: 1px solid var(--el-color-primary-light-5);
 }
 
 .switch-wrapper {
