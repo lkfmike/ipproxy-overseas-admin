@@ -319,7 +319,8 @@ const calculatePrice = debounce(async () => {
   calculating.value = true
   try {
     console.log('sending calculate request', form)
-    const res = await request.post('/static-proxy-order/calculate', form) as any
+    const payload = { ...form, protocol: String(form.protocol).toUpperCase() }
+    const res = await request.post('/static-proxy-order/calculate', payload) as any
     console.log('calculate response', res)
     if (res.code === 200) {
       priceDetail.value = res.data
@@ -461,7 +462,8 @@ const handleSubmit = async () => {
       result.value = null
       try {
         console.log('Submitting purchase request', form)
-        const res = await request.post('/static-proxy-order/purchase', form) as any
+        const payload = { ...form, protocol: String(form.protocol).toUpperCase() }
+        const res = await request.post('/static-proxy-order/purchase', payload) as any
         console.log('Purchase response', res)
         if (res.code === 200) {
           ElMessage.success('提取成功')
