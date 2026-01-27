@@ -5,7 +5,6 @@
         <div class="card-header">
           <div class="header-left">
             <span class="title">动态代理套餐管理</span>
-            <el-tag type="info" size="small" effect="plain" class="count-tag">共 {{ pagination.total }} 条</el-tag>
           </div>
           <div class="header-right">
             <el-button type="primary" :icon="Plus" @click="openCreate">新增套餐</el-button>
@@ -294,10 +293,6 @@ onMounted(() => {
       font-size: 18px;
       font-weight: 600;
       color: #1d2129;
-    }
-
-    .count-tag {
-      font-weight: normal;
     }
   }
 }

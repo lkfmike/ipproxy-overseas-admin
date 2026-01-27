@@ -123,19 +123,23 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
-  UserFilled, 
-  CreditCard, 
-  Coin, 
   Fold, 
   Expand, 
-  ArrowDown,
-  Location,
-  Connection,
-  Tools,
-  Monitor,
-  Ticket,
-  List,
-  Clock
+  ArrowDown, 
+  Connection, 
+  Odometer, 
+  User, 
+  Postcard, 
+  Discount, 
+  Platform, 
+  Money, 
+  MapLocation, 
+  Tickets, 
+  Timer, 
+  Aim, 
+  Refresh, 
+  Box, 
+  Lock
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -170,38 +174,38 @@ const menuList: MenuItem[] = [
   {
     title: '仪表盘',
     path: '/dashboard',
-    icon: Monitor,
+    icon: Odometer,
   },
   {
     title: '客户管理',
-    icon: UserFilled,
+    icon: User,
     path: '/customer',
     children: [
-      { title: '账号信息', path: '/customer/account', icon: CreditCard },
-      { title: '客户折扣', path: '/customer/discount', icon: Ticket }
+      { title: '账号信息', path: '/customer/account', icon: Postcard },
+      { title: '客户折扣', path: '/customer/discount', icon: Discount }
     ]
   },
   {
     title: '静态代理',
-    icon: Monitor,
+    icon: Platform,
     path: '/proxy',
     children: [
         { title: '网关列表', path: '/proxy/gateway', icon: Connection },
-        { title: '地区单价', path: '/proxy/pricing', icon: Coin },
-        { title: '地区管理', path: '/setting/static-region', icon: Location },
-        { title: '订单列表', path: '/proxy/order', icon: List },
-            { title: '已释放网关', path: '/proxy/history', icon: Clock },
-            { title: 'IP提取', path: '/proxy/tools', icon: Tools }
+        { title: '地区单价', path: '/proxy/pricing', icon: Money },
+        { title: '地区管理', path: '/setting/static-region', icon: MapLocation },
+        { title: '订单列表', path: '/proxy/order', icon: Tickets },
+        { title: '已释放网关', path: '/proxy/history', icon: Timer },
+        { title: 'IP提取', path: '/proxy/tools', icon: Aim }
     ]
   },
   {
     title: '动态代理',
-    icon: Monitor,
+    icon: Refresh,
     path: '/dynamic',
     children: [
-      { title: '套餐管理', path: '/dynamic/meal', icon: List },
-      { title: 'IP白名单', path: '/dynamic/whitelist', icon: Tools },
-      { title: '订单管理', path: '/dynamic/order', icon: List }
+      { title: '套餐管理', path: '/dynamic/meal', icon: Box },
+      { title: 'IP白名单', path: '/dynamic/whitelist', icon: Lock },
+      { title: '订单管理', path: '/dynamic/order', icon: Tickets }
     ]
   },
   

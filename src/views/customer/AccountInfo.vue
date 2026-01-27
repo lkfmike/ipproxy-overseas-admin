@@ -5,7 +5,6 @@
         <div class="card-header">
           <div class="header-left">
             <span class="title">账号信息管理</span>
-            <el-tag type="info" size="small" effect="plain" class="count-tag">共 {{ total }} 条数据</el-tag>
           </div>
           <el-button type="primary" :icon="Plus" @click="handleCreate">新增客户</el-button>
         </div>

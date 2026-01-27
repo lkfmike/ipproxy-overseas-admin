@@ -5,7 +5,6 @@
         <div class="card-header">
           <div class="header-left">
             <span class="title">静态地区设置</span>
-            <el-tag type="info" size="small" effect="plain" class="count-tag">共 {{ total }} 条数据</el-tag>
           </div>
           <el-button type="primary" :icon="Plus" @click="handleCreate">新增地区</el-button>
         </div>
@@ -295,9 +294,6 @@ onMounted(() => {
       font-size: 16px;
       font-weight: 600;
       color: #1d2129;
-    }
-    .count-tag {
-      font-weight: normal;
     }
   }
 }

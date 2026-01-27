@@ -5,7 +5,6 @@
         <div class="card-header">
           <div class="header-left">
             <span class="title">订单管理</span>
-            <el-tag type="info" size="small" effect="plain" class="count-tag">共 {{ pagination.total }} 条</el-tag>
           </div>
           <div class="header-right">
             <el-button type="primary" :icon="Plus" @click="openCreate">新增订单</el-button>
