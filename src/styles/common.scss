@@ -7,16 +7,33 @@ body {
   background-color: $bg-page;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+// ===== Custom Scrollbar (Webkit) =====
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: $border-radius-full;
+  &:hover {
+    background: #94a3b8;
+  }
 }
 
 // ===== Common Page Container =====
 .page-container {
-  // MainLayout provides padding
-  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: $spacing-xl;
+  animation: fade-in-up 0.5s $transition-smooth;
 }
 
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(12px); }
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -26,7 +43,12 @@ body {
 :deep(.el-button) {
   font-weight: $font-weight-medium;
   border-radius: $border-radius-base;
+  transition: all $transition-fast;
   
+  &:active {
+    transform: scale(0.98);
+  }
+
   &--primary {
     --el-button-bg-color: #{$primary-color};
     --el-button-border-color: #{$primary-color};
@@ -34,11 +56,22 @@ body {
     --el-button-hover-border-color: #{$primary-hover};
     --el-button-active-bg-color: #{$primary-active};
     --el-button-active-border-color: #{$primary-active};
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+    box-shadow: 0 2px 4px rgba($primary-color, 0.2);
+    
+    &:hover {
+      box-shadow: 0 4px 8px rgba($primary-color, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: none;
+    }
   }
 
   &--large {
     border-radius: $border-radius-md;
+    padding: 12px 24px;
   }
 }
 
@@ -46,10 +79,13 @@ body {
 :deep(.el-input__wrapper), :deep(.el-select__wrapper) {
   border-radius: $border-radius-base;
   box-shadow: 0 0 0 1px $border-color inset;
-  transition: all 0.2s;
+  transition: all $transition-fast;
+  padding-top: 2px;
+  padding-bottom: 2px;
   
   &:hover {
     box-shadow: 0 0 0 1px $primary-hover inset;
+    background-color: #fff;
   }
   
   &.is-focus {
@@ -62,7 +98,7 @@ body {
 :deep(.el-dialog) {
   border-radius: $border-radius-lg;
   overflow: hidden;
-  box-shadow: $shadow-hover;
+  box-shadow: $shadow-float;
   
   .el-dialog__header {
     margin-right: 0;
@@ -78,12 +114,12 @@ body {
   }
   
   .el-dialog__body {
-    padding: $spacing-xl;
+    padding: $spacing-xxl;
   }
   
   .el-dialog__footer {
     padding: $spacing-md $spacing-xl;
-    background-color: $bg-filter; // Slight gray footer
+    background-color: $bg-filter;
     border-top: 1px solid $border-light;
   }
 }
@@ -91,15 +127,37 @@ body {
 // 4. Pagination
 :deep(.el-pagination) {
   --el-pagination-hover-color: #{$primary-color};
+  --el-pagination-button-bg-color: transparent;
   
   .el-pager li {
     border-radius: $border-radius-base;
     font-weight: $font-weight-medium;
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: all $transition-fast;
+    
+    &:hover {
+      color: $primary-color;
+      background-color: $primary-light;
+    }
     
     &.is-active {
-      background-color: $primary-light;
-      color: $primary-color;
+      background-color: $primary-color;
+      color: #fff;
       font-weight: $font-weight-bold;
+      box-shadow: $shadow-sm;
+      
+      &:hover {
+        background-color: $primary-hover;
+      }
+    }
+  }
+  
+  button {
+    background-color: transparent;
+    border-radius: $border-radius-base;
+    &:hover {
+      background-color: $bg-filter;
     }
   }
 }
@@ -109,13 +167,12 @@ body {
   border: none !important;
   border-radius: $border-radius-md !important;
   box-shadow: $shadow-card !important;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: all $transition-base;
   background-color: $bg-card;
 
   &:hover {
     box-shadow: $shadow-hover !important;
-    // Only lift if it's an interactive card or configured to do so
-    // transform: translateY(-2px); 
+    transform: translateY(-2px); 
   }
 
   .el-card__header {
@@ -140,32 +197,24 @@ body {
     gap: $spacing-md;
 
     .title {
-      font-size: $font-size-lg;
-      font-weight: $font-weight-semibold;
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
       color: $text-primary;
       position: relative;
       display: flex;
       align-items: center;
+      letter-spacing: -0.02em;
       
       // Decorative pill
       &::before {
         content: '';
         display: block;
         width: 4px;
-        height: 16px;
-        background-color: $primary-color;
+        height: 18px;
+        background: linear-gradient(180deg, $primary-color, $primary-hover);
         border-radius: 2px;
-        margin-right: 10px;
+        margin-right: 12px;
       }
-    }
-
-    .count-tag {
-      font-weight: $font-weight-normal;
-      color: $text-secondary;
-      background-color: rgba($text-secondary, 0.06);
-      border: none;
-      border-radius: 4px;
-      padding: 0 8px;
     }
   }
 
@@ -183,10 +232,12 @@ body {
   padding: $spacing-xl;
   border-radius: $border-radius-md;
   box-shadow: $shadow-sm;
-  transition: box-shadow 0.3s;
+  transition: all $transition-base;
+  border: 1px solid transparent;
   
   &:hover {
     box-shadow: $shadow-base;
+    border-color: $border-light;
   }
 
   :deep(.el-form-item) {
@@ -204,52 +255,83 @@ body {
 .el-table {
   --el-table-header-bg-color: #f8fafc;
   --el-table-header-text-color: #475569;
-  --el-table-row-hover-bg-color: #f1f5f9;
-  --el-table-border-color: #e2e8f0;
+  --el-table-row-hover-bg-color: #f8fafc;
+  --el-table-border-color: #f1f5f9; // Lighter border
   
-  border-radius: $border-radius-base;
+  border-radius: $border-radius-md;
   overflow: hidden;
   font-size: $font-size-base;
+  // Remove outer border for cleaner look
+  // box-shadow: 0 0 0 1px $border-light; 
 
   th.el-table__cell {
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-semibold; // Slightly less bold
     background-color: #f8fafc !important;
-    height: 54px;
-    border-bottom: 1px solid $border-color;
+    height: 52px; // Slightly shorter header
+    border-bottom: 1px solid $border-light;
+    border-right: none !important; // Remove vertical borders in header
+    text-transform: none; // Remove uppercase
+    font-size: $font-size-sm;
+    letter-spacing: normal;
+    color: $text-secondary;
   }
 
   td.el-table__cell {
-    padding: 14px 0;
+    padding: 12px 0; // Compact padding
     color: $text-primary;
+    border-right: none !important; // Remove vertical borders in body
+    transition: background-color $transition-fast;
   }
   
   // Empty state style enhancement
   .el-table__empty-block {
-    min-height: 200px;
+    min-height: 240px;
+    .el-empty__description p {
+      color: $text-regular;
+    }
   }
 }
 
 // ===== Pagination =====
 .pagination-container {
-  margin-top: $spacing-xl;
+  margin-top: $spacing-xxl;
   display: flex;
   justify-content: flex-end;
-  padding: $spacing-md 0;
+  padding: $spacing-sm 0;
 }
 
 // ===== Typography Helpers =====
 .price {
   color: $price-color;
-  font-family: 'Roboto', 'Inter', sans-serif;
   font-weight: $font-weight-semibold;
-  letter-spacing: -0.5px;
 }
 
-.text-bold { font-weight: $font-weight-semibold; }
-.text-primary { color: $primary-color; }
-.text-secondary { color: $text-secondary; }
-.text-regular { color: $text-regular; }
-.font-mono { font-family: 'Roboto Mono', monospace; letter-spacing: -0.3px; }
+.font-medium {
+  font-weight: $font-weight-medium;
+}
+
+.font-mono {
+  font-family: $font-family-mono;
+}
+
+.text-secondary {
+  color: $text-secondary;
+}
+
+.text-placeholder {
+  color: $text-disabled;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-tag {
+  border: none;
+  font-weight: $font-weight-medium;
+}
 
 // ===== Form Helpers =====
 .form-tip {
@@ -265,9 +347,12 @@ body {
 // ===== Status Tags =====
 .el-tag {
   border: none;
-  font-weight: $font-weight-medium;
-  border-radius: 4px;
-  padding: 0 8px;
+  font-weight: $font-weight-semibold;
+  border-radius: 6px;
+  padding: 0 10px;
+  height: 26px;
+  line-height: 24px;
+  letter-spacing: 0.02em;
   
   &.el-tag--success { background-color: rgba($success-color, 0.1); color: $success-color; }
   &.el-tag--warning { background-color: rgba($warning-color, 0.1); color: $warning-color; }
@@ -281,7 +366,11 @@ body {
 }
 
 // ===== Responsive =====
-@media screen and (max-width: $breakpoint-sm) {
+@media screen and (max-width: 768px) {
+  .page-container {
+    padding: $spacing-md;
+  }
+
   .filter-container {
     padding: $spacing-lg;
     
@@ -311,11 +400,19 @@ body {
       width: 100%;
       justify-content: flex-start;
       flex-wrap: wrap;
+      
+      .el-button {
+        flex: 1;
+      }
     }
   }
   
   // Table Scroll on mobile
   .el-table {
     overflow-x: auto;
+  }
+  
+  .pagination-container {
+    justify-content: center;
   }
 }

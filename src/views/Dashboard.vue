@@ -1,9 +1,9 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-container" v-loading="loading">
     <!-- Top Stats Cards -->
     <el-row :gutter="20">
       <el-col :xs="24" :sm="12" :md="6" v-for="(stat, index) in stats" :key="index">
-        <el-card shadow="hover" class="stat-card" :body-style="{ padding: '20px' }">
+        <el-card shadow="hover" class="stat-card">
           <div class="stat-icon" :style="{ backgroundColor: stat.color + '15', color: stat.color }">
             <el-icon><component :is="stat.icon" /></el-icon>
           </div>
@@ -13,40 +13,30 @@
               <span class="number">{{ stat.value }}</span>
               <span class="unit" v-if="stat.unit">{{ stat.unit }}</span>
             </div>
-            <div class="stat-trend">
-              <span :class="stat.trend >= 0 ? 'up' : 'down'">
-                <el-icon v-if="stat.trend >= 0"><CaretTop /></el-icon>
-                <el-icon v-else><CaretBottom /></el-icon>
-                {{ Math.abs(stat.trend) }}%
+            <div class="stat-trend" v-if="stat.subLabel">
+              <span :class="stat.isWarning ? 'down' : 'up'">
+                {{ stat.subLabel }}
               </span>
-              <span class="trend-label">较上周</span>
             </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- Charts Section (Mocked with Progress Bars/Structure) -->
+    <!-- Charts Row 1: Trend & Distribution -->
     <el-row :gutter="20" class="mt-4">
       <el-col :xs="24" :lg="16">
         <el-card shadow="hover" class="chart-card">
           <template #header>
             <div class="card-header">
-              <span class="title">流量使用趋势 (近7天)</span>
-              <el-radio-group v-model="trafficPeriod" size="small">
-                <el-radio-button label="week">本周</el-radio-button>
-                <el-radio-button label="month">本月</el-radio-button>
+              <span class="title">静态IP过期趋势 (未来7天)</span>
+              <el-radio-group v-model="trendRange" size="small">
+                <el-radio-button label="7d">7天</el-radio-button>
               </el-radio-group>
             </div>
           </template>
-          <div class="chart-placeholder">
-            <!-- Mock Chart Visualization using Bars -->
-            <div class="bar-chart">
-              <div class="bar-item" v-for="i in 7" :key="i">
-                <div class="bar-fill" :style="{ height: Math.random() * 80 + 20 + '%' }"></div>
-                <div class="bar-label">{{ '11-' + (20 + i) }}</div>
-              </div>
-            </div>
+          <div class="chart-wrapper">
+             <v-chart class="chart" :option="lineChartOption" autoresize />
           </div>
         </el-card>
       </el-col>
@@ -54,83 +44,242 @@
         <el-card shadow="hover" class="chart-card">
           <template #header>
             <div class="card-header">
-              <span class="title">资源状态分布</span>
+              <span class="title">动态流量分布</span>
             </div>
           </template>
-          <div class="pie-chart-mock">
-            <div class="pie-circle">
-              <div class="inner-text">
-                <div class="value">98.5%</div>
-                <div class="label">可用率</div>
-              </div>
-            </div>
-            <div class="legend-list">
-              <div class="legend-item">
-                <span class="dot success"></span>
-                <span class="name">在线</span>
-                <span class="val">8,542</span>
-              </div>
-              <div class="legend-item">
-                <span class="dot warning"></span>
-                <span class="name">高延迟</span>
-                <span class="val">320</span>
-              </div>
-              <div class="legend-item">
-                <span class="dot danger"></span>
-                <span class="name">离线</span>
-                <span class="val">15</span>
-              </div>
-            </div>
+          <div class="chart-wrapper">
+            <v-chart class="chart" :option="pieChartOption" autoresize />
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- Recent Orders -->
-    <el-card shadow="hover" class="mt-4">
-      <template #header>
-        <div class="card-header">
-          <span class="title">最新动态</span>
-          <el-button text type="primary">查看更多</el-button>
-        </div>
-      </template>
-      <el-table :data="recentActivities" style="width: 100%" :header-cell-style="{ background: '#f7f8fa' }">
-        <el-table-column prop="time" label="时间" width="180" />
-        <el-table-column prop="user" label="用户" width="180" />
-        <el-table-column prop="action" label="操作" />
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="scope">
-            <el-tag :type="scope.row.statusType" size="small" effect="plain">{{ scope.row.status }}</el-tag>
+    <!-- Charts Row 2: Top Customers -->
+    <el-row :gutter="20" class="mt-4">
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="chart-card">
+          <template #header>
+            <div class="card-header">
+              <span class="title">静态IP使用量 Top 10</span>
+              <el-tag size="small" effect="plain">客户排行</el-tag>
+            </div>
           </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+          <div class="chart-wrapper">
+             <v-chart class="chart" :option="barChartStaticOption" autoresize />
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="chart-card">
+           <template #header>
+            <div class="card-header">
+              <span class="title">动态流量购买 Top 10</span>
+              <el-tag size="small" type="warning" effect="plain">客户排行</el-tag>
+            </div>
+          </template>
+          <div class="chart-wrapper">
+             <v-chart class="chart" :option="barChartDynamicOption" autoresize />
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { Monitor, User, Connection, DataLine, CaretTop, CaretBottom } from '@element-plus/icons-vue'
+import { ref, onMounted, reactive, computed } from 'vue'
+import { Monitor, User, Connection, DataLine } from '@element-plus/icons-vue'
+import request from '../utils/request'
+import { ElMessage } from 'element-plus'
 
-const trafficPeriod = ref('week')
+// ECharts
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { LineChart, BarChart, PieChart } from 'echarts/charts'
+import {
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  TitleComponent,
+  ToolboxComponent,
+  DataZoomComponent
+} from 'echarts/components'
+import VChart from 'vue-echarts'
 
+use([
+  CanvasRenderer,
+  LineChart,
+  BarChart,
+  PieChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  TitleComponent,
+  ToolboxComponent,
+  DataZoomComponent
+])
+
+const loading = ref(false)
+const trendRange = ref('7d')
+
+// Stats Data
 const stats = reactive([
-  { label: '总用户数', value: '1,286', unit: '', icon: User, color: '#165dff', trend: 12.5 },
-  { label: '活跃代理IP', value: '8,542', unit: '个', icon: Connection, color: '#00b42a', trend: 5.2 },
-  { label: '今日请求数', value: '1.2', unit: '亿次', icon: Monitor, color: '#722ed1', trend: -2.4 },
-  { label: '总带宽消耗', value: '45.8', unit: 'TB', icon: DataLine, color: '#ff7d00', trend: 8.9 }
+  { label: '静态IP已售总数', value: '0', unit: '个', icon: Connection, color: '#165dff', subLabel: '', isWarning: false },
+  { label: '即将过期IP (7天内)', value: '0', unit: '个', icon: User, color: '#f53f3f', subLabel: '', isWarning: true },
+  { label: '动态流量已售总量', value: '0', unit: 'GB', icon: DataLine, color: '#722ed1', subLabel: '', isWarning: false },
+  { label: '剩余可用流量', value: '0', unit: 'GB', icon: Monitor, color: '#00b42a', subLabel: '', isWarning: false }
 ])
 
-const recentActivities = reactive([
-  { time: '2026-01-27 10:23:45', user: 'user_8832', action: '购买了 动态住宅套餐 (10GB)', status: '成功', statusType: 'success' },
-  { time: '2026-01-27 10:15:20', user: 'admin', action: '系统配置更新: 静态网关节点扩容', status: '完成', statusType: 'info' },
-  { time: '2026-01-27 09:58:12', user: 'test_account', action: 'API 请求频率超限警告', status: '警告', statusType: 'warning' },
-  { time: '2026-01-27 09:30:00', user: 'system', action: '每日自动备份', status: '成功', statusType: 'success' },
-  { time: '2026-01-27 08:45:11', user: 'user_1102', action: '充值余额 $500.00', status: '成功', statusType: 'success' }
-])
+// Chart Data Refs
+const staticTrendData = ref<{date: string, count: number}[]>([])
+const dynamicDistributionData = ref<{name: string, value: number}[]>([])
+const topStaticCustomers = ref<{username: string, ipCount: number}[]>([])
+const topDynamicCustomers = ref<{username: string, totalPurchased: number}[]>([])
+
+// Chart Options
+const lineChartOption = computed(() => ({
+  tooltip: { trigger: 'axis' },
+  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  toolbox: { feature: { saveAsImage: {} } },
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+    data: staticTrendData.value.map(item => item.date)
+  },
+  yAxis: { type: 'value' },
+  series: [
+    {
+      name: '过期数量',
+      type: 'line',
+      smooth: true,
+      areaStyle: { opacity: 0.3 },
+      itemStyle: { color: '#f53f3f' },
+      data: staticTrendData.value.map(item => item.count)
+    }
+  ]
+}))
+
+const pieChartOption = computed(() => ({
+  tooltip: { trigger: 'item' },
+  legend: { bottom: '0%', left: 'center' },
+  series: [
+    {
+      name: '流量分布',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      avoidLabelOverlap: false,
+      itemStyle: {
+        borderRadius: 10,
+        borderColor: '#fff',
+        borderWidth: 2
+      },
+      label: { show: false, position: 'center' },
+      emphasis: {
+        label: { show: true, fontSize: '16', fontWeight: 'bold' }
+      },
+      data: dynamicDistributionData.value
+    }
+  ]
+}))
+
+const barChartStaticOption = computed(() => ({
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  xAxis: { type: 'value', boundaryGap: [0, 0.01] },
+  yAxis: {
+    type: 'category',
+    data: topStaticCustomers.value.map(item => item.username).reverse() // Reverse to show top at top
+  },
+  series: [
+    {
+      name: 'IP数量',
+      type: 'bar',
+      data: topStaticCustomers.value.map(item => item.ipCount).reverse(),
+      itemStyle: { color: '#165dff' }
+    }
+  ]
+}))
+
+const barChartDynamicOption = computed(() => ({
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  xAxis: { type: 'value', boundaryGap: [0, 0.01] },
+  yAxis: {
+    type: 'category',
+    data: topDynamicCustomers.value.map(item => item.username).reverse()
+  },
+  series: [
+    {
+      name: '购买总量(GB)',
+      type: 'bar',
+      data: topDynamicCustomers.value.map(item => item.totalPurchased).reverse(),
+      itemStyle: { color: '#722ed1' }
+    }
+  ]
+}))
+
+const fetchData = async () => {
+  loading.value = true
+  try {
+    // 1. Static IP Stats
+    const staticStatsRes: any = await request.get('/web/dashboard/staticIpStats')
+    if (staticStatsRes.code === 200) {
+      const data = staticStatsRes.data
+      stats[0].value = data.total
+      stats[1].value = data.expiring
+      stats[1].subLabel = `正常: ${data.normal}`
+    }
+
+    // 2. Dynamic Traffic Stats
+    const dynamicStatsRes: any = await request.get('/web/dashboard/dynamicTrafficStats')
+    if (dynamicStatsRes.code === 200) {
+      const data = dynamicStatsRes.data
+      stats[2].value = data.total
+      stats[3].value = data.remaining
+      stats[3].subLabel = `已用: ${data.used}`
+
+      // Prepare Pie Chart Data
+      dynamicDistributionData.value = [
+        { value: data.used, name: '已用流量', itemStyle: { color: '#165dff' } },
+        { value: data.remaining, name: '剩余流量', itemStyle: { color: '#00b42a' } },
+        { value: data.expired, name: '过期流量', itemStyle: { color: '#86909c' } }
+      ]
+    }
+
+    // 3. Top Static Customers
+    const topStaticRes: any = await request.get('/web/dashboard/topStaticIpCustomers')
+    if (topStaticRes.code === 200) {
+      topStaticCustomers.value = topStaticRes.data
+    }
+
+    // 4. Top Dynamic Customers
+    const topDynamicRes: any = await request.get('/web/dashboard/topDynamicTrafficCustomers')
+    if (topDynamicRes.code === 200) {
+      topDynamicCustomers.value = topDynamicRes.data
+    }
+
+    // 5. Static IP Trend
+    const trendRes: any = await request.get('/web/dashboard/staticIpExpireTrend')
+    if (trendRes.code === 200) {
+      staticTrendData.value = trendRes.data
+    }
+
+  } catch (error) {
+    console.error('Fetch dashboard data error', error)
+    ElMessage.error('加载仪表盘数据失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchData()
+})
 </script>
 
 <style scoped lang="scss">
+@use '../styles/variables.scss' as *;
+
 .dashboard-container {
   /* Padding is handled by main layout */
 }
@@ -141,231 +290,97 @@ const recentActivities = reactive([
 
 .stat-card {
   border: none;
-  transition: all 0.3s;
-  
+  transition: all $transition-smooth;
+  border-radius: $border-radius-lg;
+  margin-bottom: 16px;
+  height: 100%;
+
+  :deep(.el-card__body) {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: $shadow-float;
   }
 
   .stat-icon {
     width: 48px;
     height: 48px;
-    border-radius: 8px;
+    border-radius: $border-radius-md;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    float: left;
+    flex-shrink: 0;
     margin-right: 16px;
   }
 
   .stat-info {
-    overflow: hidden;
+    flex-grow: 1;
 
     .stat-label {
-      color: #86909c;
-      font-size: 14px;
+      color: $text-secondary;
+      font-size: $font-size-sm;
       margin-bottom: 4px;
     }
 
     .stat-value {
       display: flex;
       align-items: baseline;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       
       .number {
         font-size: 24px;
-        font-weight: 600;
-        color: #1d2129;
-        font-family: 'Roboto', sans-serif;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
+        font-family: $font-family-mono;
       }
       
       .unit {
-        font-size: 14px;
-        color: #86909c;
+        font-size: $font-size-sm;
+        color: $text-secondary;
         margin-left: 4px;
       }
     }
 
     .stat-trend {
       font-size: 12px;
+      height: 20px;
       display: flex;
       align-items: center;
-      gap: 4px;
-
-      .up {
-        color: #00b42a;
-        display: flex;
-        align-items: center;
-      }
-
-      .down {
-        color: #f53f3f;
-        display: flex;
-        align-items: center;
-      }
-
-      .trend-label {
-        color: #86909c;
-      }
     }
   }
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1d2129;
-    border-left: 3px solid #165dff;
-    padding-left: 12px;
-  }
-}
-
-.chart-placeholder {
-  height: 240px;
-  display: flex;
-  align-items: flex-end;
-  padding: 20px 0;
-}
-
-.bar-chart {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-
-  .bar-item {
-    width: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-
-    .bar-fill {
-      width: 100%;
-      background: linear-gradient(180deg, #4080ff 0%, #165dff 100%);
-      border-radius: 4px 4px 0 0;
-      transition: height 0.6s ease;
-      position: relative;
-      
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255,255,255,0.1);
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-
-      &:hover::after {
-        opacity: 1;
-      }
-    }
-
-    .bar-label {
-      font-size: 12px;
-      color: #86909c;
-    }
-  }
-}
-
-.pie-chart-mock {
-  height: 240px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 32px;
-
-  .pie-circle {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: conic-gradient(#00b42a 0% 98.5%, #ff7d00 98.5% 99.5%, #f53f3f 99.5% 100%);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &::after {
-      content: '';
-      position: absolute;
-      width: 120px;
-      height: 120px;
-      background: #fff;
-      border-radius: 50%;
-    }
-
-    .inner-text {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-
-      .value {
-        font-size: 24px;
-        font-weight: bold;
-        color: #1d2129;
-      }
-      
-      .label {
-        font-size: 12px;
-        color: #86909c;
-      }
-    }
-  }
-
-  .legend-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        
-        &.success { background-color: #00b42a; }
-        &.warning { background-color: #ff7d00; }
-        &.danger { background-color: #f53f3f; }
-      }
-
-      .name {
-        color: #4e5969;
-      }
-
-      .val {
-        color: #1d2129;
-        font-weight: 500;
-        margin-left: auto;
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .stat-card {
-    margin-bottom: 16px;
-  }
+.chart-card {
+  border: none;
+  border-radius: $border-radius-lg;
+  margin-bottom: 16px;
   
-  .pie-chart-mock {
-    flex-direction: column;
-    height: auto;
-    padding: 20px 0;
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+  }
+
+  .chart-wrapper {
+    height: 350px;
+    width: 100%;
+    
+    .chart {
+      height: 100%;
+      width: 100%;
+    }
   }
 }
 </style>

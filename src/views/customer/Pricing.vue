@@ -311,7 +311,7 @@ const handleDelete = (row: StaticProxyPrice) => {
 
 const handleSubmit = async () => {
   try {
-    const url = dialogType.value === 'create' ? '/static-proxy-price/create' : '/static-proxy-price/update'
+    const url = dialogType.value === 'create' ? '/web/static-proxy-price/create' : '/web/static-proxy-price/update'
     await request.post(url, formData)
     ElMessage.success(dialogType.value === 'create' ? '创建成功' : '更新成功')
     dialogVisible.value = false

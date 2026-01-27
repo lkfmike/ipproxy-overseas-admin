@@ -256,7 +256,7 @@ const submitForm = async () => {
     if (valid) {
       submitLoading.value = true
       try {
-        const url = form.id ? '/area-region/update' : '/area-region/create'
+        const url = form.id ? '/web/area-region/update' : '/web/area-region/create'
         await request.post(url, form)
         ElMessage.success(form.id ? '更新成功' : '创建成功')
         dialogVisible.value = false
@@ -277,6 +277,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/variables.scss' as *;
+
 .page-container {
   padding: 20px;
 }
@@ -291,21 +293,17 @@ onMounted(() => {
     align-items: center;
     gap: 12px;
     .title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #1d2129;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
     }
   }
 }
 
 .filter-container {
-  margin-bottom: 24px;
-  background-color: #f7f8fa;
-  padding: 16px;
-  border-radius: 4px;
-
+  margin-bottom: 20px;
+  
   :deep(.el-form-item) {
-    margin-bottom: 0;
     margin-right: 24px;
   }
 }
@@ -318,7 +316,6 @@ onMounted(() => {
 
 @media screen and (max-width: 768px) {
   .filter-container {
-    padding: 12px;
     :deep(.el-form-item) {
       margin-right: 0;
       margin-bottom: 12px;

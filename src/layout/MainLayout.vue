@@ -250,6 +250,8 @@ const handleCommand = (command: string) => {
 </script>
 
 <style scoped lang="scss">
+@use '../styles/variables.scss' as *;
+
 .layout-container {
   height: 100vh;
   width: 100%;
@@ -265,15 +267,16 @@ const handleCommand = (command: string) => {
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 998;
+  backdrop-filter: blur(2px);
 }
 
 .aside {
-  background-color: #0f172a; // Darker slate blue
-  transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
+  background-color: $bg-sidebar;
+  transition: width $transition-smooth;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  box-shadow: 2px 0 12px rgba(0,0,0,0.1);
   z-index: 1000;
   height: 100vh;
   flex-shrink: 0;
@@ -285,31 +288,30 @@ const handleCommand = (command: string) => {
     height: 100%;
     
     &.mobile-aside-open {
-      width: 240px !important;
+      width: $sidebar-width !important;
     }
   }
 
   .logo {
-    height: 64px;
+    height: $header-height;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: $text-white;
     font-size: 18px;
-    font-weight: 600;
-    background-color: #0f172a;
+    font-weight: $font-weight-bold;
+    background-color: $bg-sidebar;
     gap: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
     flex-shrink: 0;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: background-color $transition-fast;
     letter-spacing: 0.5px;
     position: relative;
     z-index: 10;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 
     &:hover {
-      background-color: #1e293b;
+      background-color: rgba(255,255,255,0.05);
     }
 
     .logo-img {
@@ -320,8 +322,8 @@ const handleCommand = (command: string) => {
     
     .logo-text {
       white-space: nowrap;
-      color: #f8fafc;
-      font-family: 'Inter', sans-serif;
+      color: $text-white;
+      font-family: $font-family;
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
   }
@@ -336,31 +338,31 @@ const handleCommand = (command: string) => {
     :deep(.el-menu-item) {
       margin: 4px 12px;
       width: calc(100% - 24px);
-      border-radius: 8px;
+      border-radius: $border-radius-md;
       height: 48px;
       line-height: 48px;
-      color: #94a3b8;
-      transition: all 0.2s;
+      color: #94a3b8; // Sidebar text color specific
+      transition: all $transition-fast;
 
       &:hover {
         background-color: rgba(255,255,255,0.08);
-        color: #fff;
-        transform: translateX(2px);
+        color: $text-white;
+        transform: translateX(4px);
       }
       &.is-active {
-        background: linear-gradient(90deg, var(--el-color-primary) 0%, #3b82f6 100%);
-        color: #fff;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(22, 93, 255, 0.25);
+        background: linear-gradient(90deg, $primary-color 0%, $primary-hover 100%);
+        color: $text-white;
+        font-weight: $font-weight-medium;
+        box-shadow: 0 4px 12px rgba($primary-color, 0.3);
         transform: translateX(0);
       }
       
       .el-icon {
-        font-size: 20px;
+        font-size: 18px;
         width: 24px;
         text-align: center;
-        margin-right: 8px;
-        transition: transform 0.2s;
+        margin-right: 10px;
+        transition: transform $transition-fast;
       }
 
       &:hover .el-icon {
@@ -371,21 +373,21 @@ const handleCommand = (command: string) => {
     :deep(.el-sub-menu__title) {
       margin: 4px 12px;
       width: calc(100% - 24px);
-      border-radius: 8px;
+      border-radius: $border-radius-md;
       height: 48px;
       line-height: 48px;
       color: #94a3b8;
       
       &:hover {
         background-color: rgba(255,255,255,0.08);
-        color: #fff;
+        color: $text-white;
       }
 
       .el-icon {
-        font-size: 20px;
+        font-size: 18px;
         width: 24px;
         text-align: center;
-        margin-right: 8px;
+        margin-right: 10px;
       }
     }
   }
@@ -396,20 +398,20 @@ const handleCommand = (command: string) => {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background-color: #F8FAFC; // Lighter bg
+  background-color: $bg-page;
   flex: 1;
 }
 
 .header {
-  height: 64px;
-  background-color: #fff;
+  height: $header-height;
+  background-color: $bg-card;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  box-shadow: $shadow-sm;
   z-index: 9;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid $border-light;
 
   .header-left {
     display: flex;
@@ -419,14 +421,14 @@ const handleCommand = (command: string) => {
     .trigger {
       font-size: 20px;
       cursor: pointer;
-      color: #64748b;
-      transition: color 0.3s;
+      color: $text-secondary;
+      transition: all $transition-fast;
       padding: 8px;
-      border-radius: 4px;
+      border-radius: $border-radius-base;
 
       &:hover {
-        color: var(--el-color-primary);
-        background-color: #f1f5f9;
+        color: $primary-color;
+        background-color: $bg-hover;
       }
     }
   }
@@ -439,19 +441,19 @@ const handleCommand = (command: string) => {
       cursor: pointer;
       padding: 6px 12px;
       border-radius: 24px;
-      transition: all 0.3s;
+      transition: all $transition-fast;
       border: 1px solid transparent;
 
       &:hover {
-        background-color: #fff;
-        border-color: #e2e8f0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        background-color: $bg-card;
+        border-color: $border-color;
+        box-shadow: $shadow-sm;
       }
 
       .username {
-        font-size: 14px;
-        color: #334155;
-        font-weight: 500;
+        font-size: $font-size-base;
+        color: $text-primary;
+        font-weight: $font-weight-medium;
       }
     }
   }
@@ -459,9 +461,18 @@ const handleCommand = (command: string) => {
 
 .main {
   flex: 1;
-  padding: 20px;
+  padding: 0; // Padding handled by page-container
   overflow-y: auto;
   overflow-x: hidden;
+  
+  // Custom scrollbar for main content
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
 }
 
 .footer {
@@ -469,10 +480,10 @@ const handleCommand = (command: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #86909C;
-  font-size: 12px;
-  background-color: #fff;
-  border-top: 1px solid #E5E6EB;
+  color: $text-regular;
+  font-size: $font-size-xs;
+  background-color: $bg-card;
+  border-top: 1px solid $border-light;
 }
 
 /* Transitions */

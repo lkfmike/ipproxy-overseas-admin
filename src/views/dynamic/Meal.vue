@@ -275,6 +275,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/variables.scss' as *;
+
 .page-container {
   padding: 20px;
 }
@@ -291,8 +293,8 @@ onMounted(() => {
 
     .title {
       font-size: 18px;
-      font-weight: 600;
-      color: #1d2129;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
     }
   }
 }
@@ -308,11 +310,11 @@ onMounted(() => {
 }
 
 .price {
-  color: #ff7d00;
+  color: $warning-color;
   font-family: 'Roboto', sans-serif;
 }
 
 .text-bold {
-  font-weight: 600;
+  font-weight: $font-weight-bold;
 }
 </style>

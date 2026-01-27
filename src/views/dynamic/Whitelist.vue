@@ -267,6 +267,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/variables.scss' as *;
+
 .page-container {
   padding: 20px;
 }
@@ -283,8 +285,8 @@ onMounted(() => {
 
     .title {
       font-size: 18px;
-      font-weight: 600;
-      color: #1d2129;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
     }
   }
 }
@@ -300,6 +302,6 @@ onMounted(() => {
 }
 
 .font-mono {
-  font-family: 'Roboto Mono', monospace;
+  font-family: $font-family-mono;
 }
 </style>

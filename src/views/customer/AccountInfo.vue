@@ -45,32 +45,40 @@
 
       <div v-loading="loading">
         <!-- Desktop Table View -->
-        <el-table v-if="!isMobile" :data="tableData" style="width: 100%" stripe border>
+        <el-table v-if="!isMobile" :data="tableData" style="width: 100%">
           <el-table-column prop="uid" label="UID" width="80" align="center" />
           <el-table-column prop="email" label="邮箱" min-width="180">
              <template #default="scope">
                 <div class="user-info">
-                  <span>{{ scope.row.email }}</span>
+                  <span class="font-medium">{{ scope.row.email }}</span>
                 </div>
              </template>
           </el-table-column>
           <el-table-column prop="nickname" label="昵称" min-width="120" />
           <el-table-column prop="parentUid" label="父账号" min-width="180">
             <template #default="scope">
-              <span v-if="scope.row.parentUid && scope.row.parentUid > 0">{{ scope.row.parentEmail || '-' }}</span>
-              <span v-else>-</span>
+              <span v-if="scope.row.parentUid && scope.row.parentUid > 0" class="text-secondary">{{ scope.row.parentEmail || '-' }}</span>
+              <span v-else class="text-placeholder">-</span>
             </template>
           </el-table-column>
-          <el-table-column prop="telegram" label="Telegram" min-width="120" />
-          <el-table-column prop="inviteCode" label="邀请码" width="100" align="center" />
+          <el-table-column prop="telegram" label="Telegram" min-width="120">
+            <template #default="scope">
+              {{ scope.row.telegram || '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="inviteCode" label="邀请码" width="100" align="center">
+            <template #default="scope">
+              <span class="font-mono">{{ scope.row.inviteCode || '-' }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="balance" label="余额" min-width="120" align="right">
             <template #default="scope">
-              <span class="price text-bold">${{ Number(scope.row.balance || 0).toFixed(2) }}</span>
+              <span class="price font-mono">${{ Number(scope.row.balance || 0).toFixed(2) }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="status" label="状态" width="100" align="center">
             <template #default="scope">
-              <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" effect="dark" size="small">
+              <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" effect="plain" size="small" class="status-tag">
                 {{ scope.row.status === 1 ? '正常' : '禁用' }}
               </el-tag>
             </template>
@@ -78,13 +86,15 @@
           <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
           <el-table-column prop="proxyType" label="代理类型" min-width="120">
             <template #default="scope">
-              <span>{{ formatProxyType(scope.row.proxyType) }}</span>
+              <el-tag type="info" effect="plain" size="small">{{ formatProxyType(scope.row.proxyType) }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="80" fixed="right" align="center">
+          <el-table-column label="操作" width="90" fixed="right" align="center">
             <template #default="scope">
-              <el-dropdown @command="(cmd: string) => handleCommand(scope.row, cmd)">
-                <el-button text bg size="small">操作</el-button>
+              <el-dropdown trigger="click" @command="(cmd: string) => handleCommand(scope.row, cmd)">
+                <el-button link type="primary" size="small">
+                  操作 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item command="detail">详情</el-dropdown-item>
@@ -103,16 +113,18 @@
         <!-- Mobile/Card Grid View -->
         <el-row :gutter="16" v-else>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="item in tableData" :key="item.uid" class="mb-4">
-            <el-card shadow="hover" class="user-card">
+            <el-card shadow="hover" class="user-card" :body-style="{ padding: '0' }">
               <div class="user-card-header">
                 <div class="user-main">
-                  <el-avatar :size="40" class="user-avatar">{{ item.email.charAt(0).toUpperCase() }}</el-avatar>
+                  <el-avatar :size="40" class="user-avatar" :style="{ backgroundColor: getRandomColor(item.uid) }">
+                    {{ item.email.charAt(0).toUpperCase() }}
+                  </el-avatar>
                   <div class="user-meta">
                     <div class="user-email" :title="item.email">{{ item.email }}</div>
-                    <div class="user-uid">UID: {{ item.uid }}</div>
+                    <div class="user-uid">UID: <span class="font-mono">{{ item.uid }}</span></div>
                   </div>
                 </div>
-                <el-tag :type="item.status === 1 ? 'success' : 'danger'" size="small" effect="dark">
+                <el-tag :type="item.status === 1 ? 'success' : 'danger'" size="small" effect="plain" class="status-tag">
                   {{ item.status === 1 ? '正常' : '禁用' }}
                 </el-tag>
               </div>
@@ -124,25 +136,29 @@
                 </div>
                 <div class="info-row">
                   <span class="label">邀请码</span>
-                  <span class="value">{{ item.inviteCode || '-' }}</span>
+                  <span class="value font-mono">{{ item.inviteCode || '-' }}</span>
                 </div>
                 <div class="info-row">
                   <span class="label">余额</span>
-                  <span class="value price">${{ Number(item.balance || 0).toFixed(2) }}</span>
+                  <span class="value price font-mono">${{ Number(item.balance || 0).toFixed(2) }}</span>
                 </div>
                 <div class="info-row">
                   <span class="label">代理类型</span>
-                  <span class="value">{{ formatProxyType(item.proxyType) }}</span>
+                  <span class="value">
+                    <el-tag type="info" size="small" effect="plain">{{ formatProxyType(item.proxyType) }}</el-tag>
+                  </span>
                 </div>
                 <div class="info-row">
                   <span class="label">父账号</span>
-                  <span class="value">{{ item.parentUid && item.parentUid > 0 ? (item.parentEmail || '-') : '-' }}</span>
+                  <span class="value text-truncate" style="max-width: 120px;">{{ item.parentUid && item.parentUid > 0 ? (item.parentEmail || '-') : '-' }}</span>
                 </div>
               </div>
 
               <div class="user-card-footer">
-                <el-dropdown @command="(cmd: string) => handleCommand(item, cmd)">
-                  <el-button text bg size="small">操作</el-button>
+                <el-dropdown trigger="click" @command="(cmd: string) => handleCommand(item, cmd)" style="width: 100%">
+                  <el-button class="action-btn" plain>
+                    管理账号 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                  </el-button>
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item command="detail">详情</el-dropdown-item>
@@ -568,6 +584,11 @@ const copyToken = (token: string) => {
   })
 }
 
+const getRandomColor = (id: number) => {
+  const colors = ['#165dff', '#00b42a', '#ff7d00', '#722ed1', '#f53f3f', '#14c9c9']
+  return colors[id % colors.length]
+}
+
 const searchParentAccounts = async (query: string) => {
   try {
     const res: any = await request.get('/web/account/list', {
@@ -884,6 +905,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/variables.scss' as *;
+
 .page-container {
   padding: 20px;
 }
@@ -906,19 +929,22 @@ onUnmounted(() => {
 
 /* Card Grid Styles (Mobile Specific) */
 .user-card {
-  transition: all 0.3s;
-  border: 1px solid #e5e6eb;
+  transition: all $transition-smooth;
+  border: 1px solid $border-light;
+  overflow: hidden;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: $shadow-float;
   }
 
   .user-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    padding: 16px;
+    background-color: #fff;
+    border-bottom: 1px solid $border-light;
     
     .user-main {
       display: flex;
@@ -926,16 +952,17 @@ onUnmounted(() => {
       gap: 12px;
       
       .user-avatar {
-        background-color: #165dff;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: $font-weight-bold;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       }
       
       .user-meta {
         .user-email {
-          font-weight: 600;
-          color: #1d2129;
-          font-size: 14px;
+          font-weight: $font-weight-bold;
+          color: $text-primary;
+          font-size: $font-size-base;
           margin-bottom: 2px;
           max-width: 140px;
           overflow: hidden;
@@ -943,50 +970,52 @@ onUnmounted(() => {
           white-space: nowrap;
         }
         .user-uid {
-          font-size: 12px;
-          color: #86909c;
+          font-size: $font-size-xs;
+          color: $text-secondary;
         }
       }
     }
   }
 
   .user-card-body {
-    background-color: #f7f8fa;
-    border-radius: 4px;
-    padding: 12px;
-    margin-bottom: 16px;
-
+    background-color: $bg-hover;
+    padding: 16px;
+    
     .info-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 13px;
+      margin-bottom: 12px;
+      font-size: $font-size-sm;
 
       &:last-child {
         margin-bottom: 0;
       }
 
       .label {
-        color: #86909c;
+        color: $text-secondary;
       }
 
       .value {
-        color: #1d2129;
-        font-weight: 500;
+        color: $text-primary;
+        font-weight: $font-weight-medium;
       }
     }
   }
 
   .user-card-footer {
-    display: flex;
-    justify-content: space-between;
-    border-top: 1px solid #f2f3f5;
-    padding-top: 12px;
-    margin-top: 12px;
+    border-top: 1px solid $border-light;
+    padding: 12px 16px;
+    background-color: #fff;
     
-    .el-button {
-      padding: 4px 8px;
-      height: 24px;
+    .action-btn {
+      width: 100%;
+      border: 1px solid $border-color;
+      
+      &:hover {
+        color: $primary-color;
+        border-color: $primary-color;
+        background-color: $primary-light;
+      }
     }
   }
 }

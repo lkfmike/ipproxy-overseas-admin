@@ -552,10 +552,16 @@ const openDetails = (row: any) => {
 .traffic-cell {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
   flex-direction: column;
-  padding: 2px 0;
-  line-height: 1.1;
+  padding: 0;
+  line-height: 1;
   font-size: 12px;
+
+  :deep(.el-progress__text) {
+    font-size: 12px;
+    transform: scale(0.65);
+    margin-left: 0;
+  }
 }
 </style>

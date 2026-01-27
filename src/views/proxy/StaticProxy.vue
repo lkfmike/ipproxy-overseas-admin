@@ -762,8 +762,8 @@ const handleSubmit = async () => {
       submitting.value = true
       try {
         const url = dialogType.value === 'create' 
-          ? '/gateway/create' 
-          : '/gateway/update'
+          ? '/web/gateway/create' 
+          : '/web/gateway/update'
         const payload: any = { ...formData }
         if (payload.expireTime) {
           payload.expireTime = dayjs(payload.expireTime).format('YYYY-MM-DD HH:mm:ss')
