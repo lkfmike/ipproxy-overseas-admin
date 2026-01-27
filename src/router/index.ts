@@ -12,8 +12,14 @@ const routes = [
   {
     path: '/',
     component: MainLayout,
-    redirect: '/customer/account',
+    redirect: '/dashboard',
     children: [
+      {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('../views/Dashboard.vue'),
+        meta: { title: '仪表盘' }
+      },
       {
         path: '/customer',
         name: 'Customer',

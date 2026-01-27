@@ -886,41 +886,17 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .page-container {
-  /* Padding handled by MainLayout */
+  padding: 20px;
+}
+
+.filter-container {
+  margin-bottom: 20px;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1d2129;
-    }
-
-    .count-tag {
-      font-weight: normal;
-    }
-  }
-}
-
-.filter-container {
-  margin-bottom: 24px;
-  background-color: #f7f8fa;
-  padding: 16px;
-  border-radius: 4px;
-
-  :deep(.el-form-item) {
-    margin-bottom: 0;
-    margin-right: 24px;
-  }
 }
 
 .pagination-container {
@@ -929,32 +905,7 @@ onUnmounted(() => {
   justify-content: flex-end;
 }
 
-.price {
-  color: #ff7d00;
-  font-family: 'Roboto', sans-serif;
-}
-
-.form-tip {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #86909c;
-}
-
-.text-bold {
-  font-weight: 600;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  
-  span {
-    font-weight: 500;
-    color: #1d2129;
-  }
-}
-
-/* Card Grid Styles */
+/* Card Grid Styles (Mobile Specific) */
 .user-card {
   transition: all 0.3s;
   border: 1px solid #e5e6eb;
@@ -1052,22 +1003,6 @@ onUnmounted(() => {
     padding: 4px 10px;
     height: 26px;
     border-radius: 6px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .filter-container {
-    padding: 12px;
-    
-    :deep(.el-form-item) {
-      margin-right: 0;
-      margin-bottom: 12px;
-      width: 100%;
-      
-      .el-form-item__content {
-        width: 100%;
-      }
-    }
   }
 }
 </style>

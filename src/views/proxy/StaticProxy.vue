@@ -939,7 +939,7 @@ const copyToClipboard = async (text: string) => {
 
 .page-container {
   padding: 24px 32px;
-  background-color: #F2F3F5;
+  background-color: var(--el-fill-color-lighter);
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -955,13 +955,13 @@ const copyToClipboard = async (text: string) => {
       .page-title {
         font-size: 24px;
         font-weight: 700;
-        color: var(--text-color-primary);
+        color: var(--el-text-color-primary);
         margin: 0 0 8px 0;
         line-height: 32px;
       }
       .page-subtitle {
         font-size: 14px;
-        color: var(--text-color-secondary);
+        color: var(--el-text-color-secondary);
         margin: 0;
       }
     }
@@ -978,7 +978,7 @@ const copyToClipboard = async (text: string) => {
       
       .refresh-btn {
         font-size: 18px;
-        color: var(--text-color-regular);
+        color: var(--el-text-color-regular);
         &:hover {
           color: var(--el-color-primary);
           background-color: var(--el-color-primary-light-9);
@@ -991,7 +991,7 @@ const copyToClipboard = async (text: string) => {
   .filter-card {
     margin-bottom: 24px;
     overflow: visible;
-    background-color: var(--bg-color-card);
+    background-color: var(--el-bg-color);
     
     :deep(.el-card__body) {
       padding: 24px 24px 8px 24px;
@@ -1001,7 +1001,7 @@ const copyToClipboard = async (text: string) => {
   .filter-form {
     :deep(.el-form-item__label) {
       font-weight: 500;
-      color: var(--text-color-regular);
+      color: var(--el-text-color-regular);
       padding-bottom: 8px;
     }
     
@@ -1020,8 +1020,8 @@ const copyToClipboard = async (text: string) => {
         border-radius: 50%;
         margin-right: 8px;
       }
-      &.active::before { background-color: var(--color-success-text); }
-      &.expired::before { background-color: var(--color-danger-text); }
+      &.active::before { background-color: var(--el-color-success); }
+      &.expired::before { background-color: var(--el-color-danger); }
     }
   }
   
@@ -1035,7 +1035,7 @@ const copyToClipboard = async (text: string) => {
       padding: 9px 20px;
       &.reset {
         border-color: var(--el-border-color);
-        color: var(--text-color-regular);
+        color: var(--el-text-color-regular);
         &:hover {
           color: var(--el-color-primary);
           border-color: var(--el-color-primary);
@@ -1048,17 +1048,17 @@ const copyToClipboard = async (text: string) => {
   .table-card {
     display: flex;
     flex-direction: column;
-    background-color: var(--bg-color-card);
+    background-color: var(--el-bg-color);
   }
   
   .table-container {
-    border-bottom: 1px solid var(--bg-color-page);
+    border-bottom: 1px solid var(--el-fill-color-light);
   }
   
   .font-mono {
     font-family: "SF Mono", "Roboto Mono", Monaco, Consolas, monospace;
     font-size: 13px;
-    color: var(--text-color-primary);
+    color: var(--el-text-color-primary);
   }
   
   .info-cell {
@@ -1070,7 +1070,7 @@ const copyToClipboard = async (text: string) => {
     .copy-btn {
       opacity: 0;
       cursor: pointer;
-      color: var(--text-color-secondary);
+      color: var(--el-text-color-secondary);
       font-size: 14px;
       transition: all 0.2s;
       
@@ -1097,12 +1097,12 @@ const copyToClipboard = async (text: string) => {
       width: 24px;
       height: 24px;
       border-radius: 4px;
-      color: var(--text-color-secondary);
+      color: var(--el-text-color-secondary);
       cursor: pointer;
       transition: all 0.2s;
       
       &:hover {
-        background-color: var(--bg-color-page);
+        background-color: var(--el-fill-color-light);
         color: var(--el-color-primary);
       }
     }
@@ -1110,7 +1110,7 @@ const copyToClipboard = async (text: string) => {
   
   .quality-text {
     font-weight: 500;
-    color: var(--text-color-primary);
+    color: var(--el-text-color-primary);
     font-size: 12px;
   }
   
@@ -1123,7 +1123,7 @@ const copyToClipboard = async (text: string) => {
   }
   
   .empty-text {
-    color: var(--text-color-placeholder);
+    color: var(--el-text-color-placeholder);
     font-style: italic;
     font-size: 12px;
   }
@@ -1133,7 +1133,7 @@ const copyToClipboard = async (text: string) => {
       line-height: 1.4;
     }
     .email {
-      color: var(--text-color-primary);
+      color: var(--el-text-color-primary);
       font-size: 13px;
     }
   }
@@ -1153,20 +1153,20 @@ const copyToClipboard = async (text: string) => {
     }
     
     &.active {
-      background-color: var(--color-success-bg);
-      color: var(--color-success-text);
-      .dot { background-color: var(--color-success-text); }
+      background-color: var(--el-color-success-light-9);
+      color: var(--el-color-success);
+      .dot { background-color: var(--el-color-success); }
     }
     
     &.expired {
-      background-color: var(--color-danger-bg);
-      color: var(--color-danger-text);
-      .dot { background-color: var(--color-danger-text); }
+      background-color: var(--el-color-danger-light-9);
+      color: var(--el-color-danger);
+      .dot { background-color: var(--el-color-danger); }
     }
   }
   
   .date-text {
-    color: var(--text-color-secondary);
+    color: var(--el-text-color-secondary);
     font-size: 13px;
   }
   
@@ -1191,7 +1191,7 @@ const copyToClipboard = async (text: string) => {
     white-space: pre-line;
     line-height: 1.6;
     font-size: 14px;
-    color: var(--text-color-primary);
+    color: var(--el-text-color-primary);
     padding-top: 4px;
   }
   :deep(.el-message-box.confirm-dialog .el-message-box__btns .el-button) {
@@ -1216,7 +1216,7 @@ const copyToClipboard = async (text: string) => {
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
-    background-color: var(--bg-color-card);
+    background-color: var(--el-bg-color);
   }
   
   .batch-operations {
@@ -1233,7 +1233,7 @@ const copyToClipboard = async (text: string) => {
       
       .count {
         font-size: 13px;
-        color: var(--text-color-primary);
+        color: var(--el-text-color-primary);
         .num {
           color: var(--el-color-primary);
           font-weight: 600;
@@ -1336,7 +1336,7 @@ const copyToClipboard = async (text: string) => {
   .section-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-color-primary);
+    color: var(--el-text-color-primary);
     margin: 0 0 16px 0;
     padding-left: 12px;
     border-left: 4px solid var(--el-color-primary);
@@ -1360,7 +1360,7 @@ const copyToClipboard = async (text: string) => {
     
     .label {
       font-size: 12px;
-      color: var(--text-color-secondary);
+      color: var(--el-text-color-secondary);
     }
     
     .value-wrapper {
@@ -1370,7 +1370,7 @@ const copyToClipboard = async (text: string) => {
       
       .copy-icon {
         cursor: pointer;
-        color: var(--text-color-secondary);
+        color: var(--el-text-color-secondary);
         font-size: 14px;
         transition: color 0.2s;
         
@@ -1382,7 +1382,7 @@ const copyToClipboard = async (text: string) => {
     
     .value {
       font-size: 14px;
-      color: var(--text-color-primary);
+      color: var(--el-text-color-primary);
       font-weight: 500;
       word-break: break-all;
     }
@@ -1390,7 +1390,7 @@ const copyToClipboard = async (text: string) => {
 }
 
 .connection-card {
-  background-color: var(--bg-color-section);
+  background-color: var(--el-fill-color-light);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
@@ -1407,7 +1407,7 @@ const copyToClipboard = async (text: string) => {
     
     .card-title {
       font-weight: 600;
-      color: var(--text-color-primary);
+      color: var(--el-text-color-primary);
     }
     
     .card-actions {

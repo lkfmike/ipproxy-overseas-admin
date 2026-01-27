@@ -276,6 +276,10 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+.page-container {
+  padding: 20px;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -299,15 +303,7 @@ onMounted(() => {
 }
 
 .filter-container {
-  margin-bottom: 24px;
-  background-color: #f7f8fa;
-  padding: 16px;
-  border-radius: 4px;
-
-  :deep(.el-form-item) {
-    margin-bottom: 0;
-    margin-right: 24px;
-  }
+  margin-bottom: 20px;
 }
 
 .pagination-container {

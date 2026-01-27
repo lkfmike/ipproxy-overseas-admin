@@ -1,11 +1,134 @@
 @use './variables.scss' as *;
 
-// ===== 通用页面容器样式 =====
-.page-container {
-  // MainLayout已经提供padding，这里不再添加
+// ===== Global Reset / Defaults =====
+body {
+  font-family: $font-family;
+  color: $text-primary;
+  background-color: $bg-page;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-// ===== 卡片头部统一样式 =====
+// ===== Common Page Container =====
+.page-container {
+  // MainLayout provides padding
+  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ===== Element Plus Overrides (Deep Customization) =====
+
+// 1. Buttons
+:deep(.el-button) {
+  font-weight: $font-weight-medium;
+  border-radius: $border-radius-base;
+  
+  &--primary {
+    --el-button-bg-color: #{$primary-color};
+    --el-button-border-color: #{$primary-color};
+    --el-button-hover-bg-color: #{$primary-hover};
+    --el-button-hover-border-color: #{$primary-hover};
+    --el-button-active-bg-color: #{$primary-active};
+    --el-button-active-border-color: #{$primary-active};
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+  }
+
+  &--large {
+    border-radius: $border-radius-md;
+  }
+}
+
+// 2. Inputs & Selects
+:deep(.el-input__wrapper), :deep(.el-select__wrapper) {
+  border-radius: $border-radius-base;
+  box-shadow: 0 0 0 1px $border-color inset;
+  transition: all 0.2s;
+  
+  &:hover {
+    box-shadow: 0 0 0 1px $primary-hover inset;
+  }
+  
+  &.is-focus {
+    box-shadow: 0 0 0 2px rgba($primary-color, 0.2) !important;
+    border-color: $primary-color;
+  }
+}
+
+// 3. Dialogs
+:deep(.el-dialog) {
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-hover;
+  
+  .el-dialog__header {
+    margin-right: 0;
+    padding: $spacing-lg $spacing-xl;
+    border-bottom: 1px solid $border-light;
+    background-color: #fff;
+    
+    .el-dialog__title {
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-lg;
+      color: $text-primary;
+    }
+  }
+  
+  .el-dialog__body {
+    padding: $spacing-xl;
+  }
+  
+  .el-dialog__footer {
+    padding: $spacing-md $spacing-xl;
+    background-color: $bg-filter; // Slight gray footer
+    border-top: 1px solid $border-light;
+  }
+}
+
+// 4. Pagination
+:deep(.el-pagination) {
+  --el-pagination-hover-color: #{$primary-color};
+  
+  .el-pager li {
+    border-radius: $border-radius-base;
+    font-weight: $font-weight-medium;
+    
+    &.is-active {
+      background-color: $primary-light;
+      color: $primary-color;
+      font-weight: $font-weight-bold;
+    }
+  }
+}
+
+// ===== Pro Card Styles =====
+.el-card {
+  border: none !important;
+  border-radius: $border-radius-md !important;
+  box-shadow: $shadow-card !important;
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: $bg-card;
+
+  &:hover {
+    box-shadow: $shadow-hover !important;
+    // Only lift if it's an interactive card or configured to do so
+    // transform: translateY(-2px); 
+  }
+
+  .el-card__header {
+    padding: $spacing-lg $spacing-xl;
+    border-bottom: 1px solid $border-light;
+  }
+
+  .el-card__body {
+    padding: $spacing-xl;
+  }
+}
+
+// ===== Card Header =====
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -17,141 +140,161 @@
     gap: $spacing-md;
 
     .title {
-      font-size: $font-size-xl;
+      font-size: $font-size-lg;
       font-weight: $font-weight-semibold;
       color: $text-primary;
+      position: relative;
+      display: flex;
+      align-items: center;
+      
+      // Decorative pill
+      &::before {
+        content: '';
+        display: block;
+        width: 4px;
+        height: 16px;
+        background-color: $primary-color;
+        border-radius: 2px;
+        margin-right: 10px;
+      }
     }
 
     .count-tag {
       font-weight: $font-weight-normal;
+      color: $text-secondary;
+      background-color: rgba($text-secondary, 0.06);
+      border: none;
+      border-radius: 4px;
+      padding: 0 8px;
     }
   }
 
   .header-right {
     display: flex;
     gap: $spacing-md;
+    align-items: center;
   }
 }
 
-// ===== 筛选区域统一样式 =====
+// ===== Filter Container =====
 .filter-container {
-  margin-bottom: $spacing-xxl;
-  background-color: $bg-filter;
-  padding: $spacing-lg;
-  border-radius: $border-radius-base;
+  margin-bottom: $spacing-xl;
+  background-color: $bg-card;
+  padding: $spacing-xl;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+  transition: box-shadow 0.3s;
+  
+  &:hover {
+    box-shadow: $shadow-base;
+  }
 
   :deep(.el-form-item) {
     margin-bottom: 0;
     margin-right: $spacing-xxl;
+    
+    .el-form-item__label {
+      font-weight: $font-weight-medium;
+      color: $text-secondary;
+    }
   }
 }
 
-// ===== 分页容器统一样式 =====
+// ===== Pro Table Styles =====
+.el-table {
+  --el-table-header-bg-color: #f8fafc;
+  --el-table-header-text-color: #475569;
+  --el-table-row-hover-bg-color: #f1f5f9;
+  --el-table-border-color: #e2e8f0;
+  
+  border-radius: $border-radius-base;
+  overflow: hidden;
+  font-size: $font-size-base;
+
+  th.el-table__cell {
+    font-weight: $font-weight-semibold;
+    background-color: #f8fafc !important;
+    height: 54px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  td.el-table__cell {
+    padding: 14px 0;
+    color: $text-primary;
+  }
+  
+  // Empty state style enhancement
+  .el-table__empty-block {
+    min-height: 200px;
+  }
+}
+
+// ===== Pagination =====
 .pagination-container {
   margin-top: $spacing-xl;
   display: flex;
   justify-content: flex-end;
+  padding: $spacing-md 0;
 }
 
-// ===== 价格显示统一样式 =====
+// ===== Typography Helpers =====
 .price {
   color: $price-color;
-  font-family: 'Roboto', 'Arial', sans-serif;
+  font-family: 'Roboto', 'Inter', sans-serif;
   font-weight: $font-weight-semibold;
+  letter-spacing: -0.5px;
 }
 
-.price-text {
-  color: $price-color;
-  font-weight: $font-weight-bold;
-}
+.text-bold { font-weight: $font-weight-semibold; }
+.text-primary { color: $primary-color; }
+.text-secondary { color: $text-secondary; }
+.text-regular { color: $text-regular; }
+.font-mono { font-family: 'Roboto Mono', monospace; letter-spacing: -0.3px; }
 
-// ===== 操作按钮组统一样式 =====
-.op-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: 0 $spacing-xs;
-  
-  :deep(.el-button) {
-    padding: 4px 10px;
-    height: 26px;
-    border-radius: $border-radius-md;
-  }
-}
-
-// ===== 用户信息显示 =====
-.user-info {
-  display: flex;
-  align-items: center;
-  
-  span {
-    font-weight: $font-weight-medium;
-    color: $text-primary;
-  }
-}
-
-// ===== 表单提示文字 =====
+// ===== Form Helpers =====
 .form-tip {
-  margin-top: $spacing-xs;
+  margin-top: 6px;
   font-size: $font-size-xs;
   color: $text-regular;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
 }
 
-// ===== 通用工具类 =====
-.text-bold {
-  font-weight: $font-weight-semibold;
+// ===== Status Tags =====
+.el-tag {
+  border: none;
+  font-weight: $font-weight-medium;
+  border-radius: 4px;
+  padding: 0 8px;
+  
+  &.el-tag--success { background-color: rgba($success-color, 0.1); color: $success-color; }
+  &.el-tag--warning { background-color: rgba($warning-color, 0.1); color: $warning-color; }
+  &.el-tag--danger { background-color: rgba($danger-color, 0.1); color: $danger-color; }
+  &.el-tag--info { background-color: rgba($info-color, 0.1); color: $info-color; }
+  
+  &.el-tag--plain {
+    background-color: #fff;
+    border: 1px solid currentColor;
+  }
 }
 
-.text-primary {
-  color: $text-primary;
-}
-
-.text-secondary {
-  color: $text-secondary;
-}
-
-.text-regular {
-  color: $text-regular;
-}
-
-.text-xs {
-  font-size: $font-size-xs;
-}
-
-.text-sm {
-  font-size: $font-size-sm;
-}
-
-.text-gray {
-  color: $text-regular;
-}
-
-.mb-4 {
-  margin-bottom: $spacing-lg;
-}
-
-.mr-1 {
-  margin-right: $spacing-xs;
-}
-
-.mt-1 {
-  margin-top: $spacing-xs;
-}
-
-.ml-2 {
-  margin-left: $spacing-sm;
-}
-
-// ===== 响应式样式 =====
+// ===== Responsive =====
 @media screen and (max-width: $breakpoint-sm) {
   .filter-container {
-    padding: $spacing-md;
+    padding: $spacing-lg;
     
     :deep(.el-form-item) {
       margin-right: 0;
       margin-bottom: $spacing-md;
       width: 100%;
+      display: block;
+      
+      .el-form-item__label {
+        display: block;
+        margin-bottom: 4px;
+      }
       
       .el-form-item__content {
         width: 100%;
@@ -166,6 +309,13 @@
 
     .header-right {
       width: 100%;
+      justify-content: flex-start;
+      flex-wrap: wrap;
     }
+  }
+  
+  // Table Scroll on mobile
+  .el-table {
+    overflow-x: auto;
   }
 }

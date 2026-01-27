@@ -526,38 +526,18 @@ const openDetails = (row: any) => {
 </script>
 
 <style scoped lang="scss">
+.page-container {
+  padding: 20px;
+}
+
+.filter-container {
+  margin-bottom: 20px;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1d2129;
-    }
-
-    .count-tag {
-      font-weight: normal;
-    }
-  }
-}
-
-.filter-container {
-  margin-bottom: 24px;
-  background-color: #f7f8fa;
-  padding: 16px;
-  border-radius: 4px;
-
-  :deep(.el-form-item) {
-    margin-bottom: 0;
-    margin-right: 24px;
-  }
 }
 
 .pagination-container {
@@ -566,18 +546,10 @@ const openDetails = (row: any) => {
   justify-content: flex-end;
 }
 
-.price {
-  color: #ff7d00;
-  font-family: 'Roboto', sans-serif;
-}
-
-.text-bold {
-  font-weight: 600;
-}
-
 .font-mono {
   font-family: 'Roboto Mono', monospace;
 }
+
 .traffic-cell {
   display: flex;
   align-items: center;

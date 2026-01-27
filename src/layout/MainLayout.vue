@@ -24,8 +24,8 @@
         :default-active="activeMenu"
         class="el-menu-vertical"
         :collapse="isCollapse && !isMobile"
-        background-color="#1f2937"
-        text-color="#9ca3af"
+        background-color="#0f172a"
+        text-color="#94a3b8"
         active-text-color="#ffffff"
         unique-opened
         router
@@ -168,6 +168,11 @@ interface MenuItem {
 }
 const menuList: MenuItem[] = [
   {
+    title: '仪表盘',
+    path: '/dashboard',
+    icon: Monitor,
+  },
+  {
     title: '客户管理',
     icon: UserFilled,
     path: '/customer',
@@ -259,12 +264,12 @@ const handleCommand = (command: string) => {
 }
 
 .aside {
-  background-color: #001529;
+  background-color: #0f172a; // Darker slate blue
   transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 6px rgba(0,21,41,0.35);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
   z-index: 1000;
   height: 100vh;
   flex-shrink: 0;
@@ -286,70 +291,97 @@ const handleCommand = (command: string) => {
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    background-color: #002140;
+    background-color: #0f172a;
     gap: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     flex-shrink: 0;
     cursor: pointer;
     transition: all 0.3s;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 
     &:hover {
-      background-color: #00284d;
+      background-color: #1e293b;
     }
 
     .logo-img {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
     
     .logo-text {
       white-space: nowrap;
-      color: #fff;
-      font-family: 'Helvetica Neue', sans-serif;
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
   }
 
   .el-menu-vertical {
     border-right: none;
     background-color: transparent;
-    padding: 4px 0;
+    padding: 12px 0;
     flex: 1;
     overflow-y: auto;
     
     :deep(.el-menu-item) {
-      margin: 4px 8px;
-      width: calc(100% - 16px);
-      border-radius: 4px;
-      height: 50px;
-      line-height: 50px;
+      margin: 4px 12px;
+      width: calc(100% - 24px);
+      border-radius: 8px;
+      height: 48px;
+      line-height: 48px;
+      color: #94a3b8;
+      transition: all 0.2s;
 
       &:hover {
         background-color: rgba(255,255,255,0.08);
+        color: #fff;
+        transform: translateX(2px);
       }
       &.is-active {
-        background-color: var(--el-color-primary);
+        background: linear-gradient(90deg, var(--el-color-primary) 0%, #3b82f6 100%);
         color: #fff;
         font-weight: 500;
+        box-shadow: 0 4px 12px rgba(22, 93, 255, 0.25);
+        transform: translateX(0);
       }
       
       .el-icon {
-        font-size: 18px;
+        font-size: 20px;
         width: 24px;
         text-align: center;
+        margin-right: 8px;
+        transition: transform 0.2s;
+      }
+
+      &:hover .el-icon {
+        transform: scale(1.1);
       }
     }
 
     :deep(.el-sub-menu__title) {
-      margin: 4px 8px;
-      width: calc(100% - 16px);
-      border-radius: 4px;
-      height: 50px;
-      line-height: 50px;
+      margin: 4px 12px;
+      width: calc(100% - 24px);
+      border-radius: 8px;
+      height: 48px;
+      line-height: 48px;
+      color: #94a3b8;
       
       &:hover {
         background-color: rgba(255,255,255,0.08);
+        color: #fff;
+      }
+
+      .el-icon {
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
+        margin-right: 8px;
       }
     }
   }
@@ -360,7 +392,7 @@ const handleCommand = (command: string) => {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background-color: #F2F3F5;
+  background-color: #F8FAFC; // Lighter bg
   flex: 1;
 }
 
@@ -371,8 +403,9 @@ const handleCommand = (command: string) => {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  box-shadow: 0 1px 4px rgba(0,21,41,0.08);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   z-index: 9;
+  border-bottom: 1px solid #e2e8f0;
 
   .header-left {
     display: flex;
@@ -382,11 +415,14 @@ const handleCommand = (command: string) => {
     .trigger {
       font-size: 20px;
       cursor: pointer;
-      color: #4E5969;
+      color: #64748b;
       transition: color 0.3s;
+      padding: 8px;
+      border-radius: 4px;
 
       &:hover {
         color: var(--el-color-primary);
+        background-color: #f1f5f9;
       }
     }
   }
@@ -395,19 +431,22 @@ const handleCommand = (command: string) => {
     .user-profile {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: background-color 0.3s;
+      padding: 6px 12px;
+      border-radius: 24px;
+      transition: all 0.3s;
+      border: 1px solid transparent;
 
       &:hover {
-        background-color: #F2F3F5;
+        background-color: #fff;
+        border-color: #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       }
 
       .username {
         font-size: 14px;
-        color: #1D2129;
+        color: #334155;
         font-weight: 500;
       }
     }
