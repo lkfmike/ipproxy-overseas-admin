@@ -189,6 +189,16 @@ const menuList: MenuItem[] = [
             { title: 'IP提取', path: '/proxy/tools', icon: Tools }
     ]
   },
+  {
+    title: '动态代理',
+    icon: Monitor,
+    path: '/dynamic',
+    children: [
+      { title: '套餐管理', path: '/dynamic/meal', icon: List },
+      { title: 'IP白名单', path: '/dynamic/whitelist', icon: Tools },
+      { title: '订单管理', path: '/dynamic/order', icon: List }
+    ]
+  },
   
 ]
 

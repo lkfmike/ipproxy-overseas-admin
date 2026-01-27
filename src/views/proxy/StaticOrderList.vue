@@ -26,7 +26,7 @@
               <el-option
                 v-for="item in userList"
                 :key="item.uid"
-                :label="item.email + ' (UID: ' + item.uid + ')'"
+                :label="item.email"
                 :value="item.uid"
               />
             </el-select>
@@ -153,7 +153,7 @@ const searchUsers = async (query: string) => {
     if (query) {
       params.email = query
     }
-    const res = await request.get('/account/list', { params })
+    const res = await request.get('/web/account/list', { params })
     userList.value = res.data?.list || []
   } catch (error) {
   } finally {
@@ -171,7 +171,7 @@ const fetchData = async () => {
       status: filterForm.status,
       orderNo: filterForm.orderNo
     }
-    const res = await request.get('/async-order/list', { params })
+    const res = await request.get('/web/async-order/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (error) {

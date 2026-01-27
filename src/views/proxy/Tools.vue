@@ -46,12 +46,7 @@
                           :key="item.uid"
                           :label="item.email"
                           :value="item.uid"
-                        >
-                          <div class="option-item">
-                            <span class="option-label">{{ item.email }}</span>
-                            <span class="option-sub">UID: {{ item.uid }}</span>
-                          </div>
-                        </el-option>
+                        />
                       </el-select>
                     </el-form-item>
                   </el-col>
@@ -320,7 +315,7 @@ const calculatePrice = debounce(async () => {
   try {
     console.log('sending calculate request', form)
     const payload = { ...form, protocol: String(form.protocol).toUpperCase() }
-    const res = await request.post('/static-proxy-order/calculate', payload) as any
+    const res = await request.post('/web/static-proxy-order/calculate', payload) as any
     console.log('calculate response', res)
     if (res.code === 200) {
       priceDetail.value = res.data
@@ -422,7 +417,7 @@ const searchUsers = async (query: string) => {
     if (query) {
       params.email = query
     }
-    const res = await request.get('/account/list', { params })
+    const res = await request.get('/web/account/list', { params })
     console.log('account/list response', res)
     const data = res?.data || {}
     userList.value = data.list || data.records || data.items || []
@@ -436,7 +431,7 @@ const searchUsers = async (query: string) => {
 
 const fetchStocks = async () => {
   try {
-    const res = await request.get('/static-proxy-order/stocks') as any
+    const res = await request.get('/web/static-proxy-order/stocks') as any
     if (res.code === 200) {
       stocks.value = res.data
       const initialList = stocks.value[form.stockType] || []
@@ -463,7 +458,7 @@ const handleSubmit = async () => {
       try {
         console.log('Submitting purchase request', form)
         const payload = { ...form, protocol: String(form.protocol).toUpperCase() }
-        const res = await request.post('/static-proxy-order/purchase', payload) as any
+        const res = await request.post('/web/static-proxy-order/purchase', payload) as any
         console.log('Purchase response', res)
         if (res.code === 200) {
           ElMessage.success('提取成功')

@@ -540,7 +540,7 @@ const userLoading = ref(false)
 const fetchUserList = async (query: string) => {
   userLoading.value = true
   try {
-    const res = await request.get('/account/list', {
+    const res = await request.get('/web/account/list', {
       params: {
         page: 1,
         size: 50,
@@ -624,7 +624,7 @@ const formatDate = (date: string) => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await request.get('/gateway/list', {
+    const res = await request.get('/web/gateway/list', {
       params: {
         page: currentPage.value,
         size: pageSize.value,
@@ -695,7 +695,7 @@ const handleToggleAutoRenew = async (row: any, val: boolean) => {
   }
   autoRenewUpdating.value.add(row.id)
   try {
-    const res = await request.post('/gateway/update', { id: row.id, autoRenew: val })
+    const res = await request.post('/web/gateway/update', { id: row.id, autoRenew: val })
     const data = res as any
     if (data.code !== 200) {
       row.autoRenew = !val
@@ -790,7 +790,7 @@ const handleSubmit = async () => {
 
 const handleDelete = async (row: any) => {
   try {
-    const res = await request.post('/gateway/delete', { id: row.id })
+    const res = await request.post('/web/gateway/delete', { id: row.id })
     const data = res as any
     if (data.code === 200) {
       ElMessage.success('删除成功')
@@ -903,7 +903,7 @@ const handleBatchRenew = async () => {
     const ids = items.map((i: any) => i.id)
     await ElMessageBox.confirm(`将为 UID=${uid} 的 ${ids.length} 项执行批量续费。是否继续？`, '提示', { type: 'warning' })
     try {
-      const res = await request.post('/gateway/batch-renew', { ids, uid })
+      const res = await request.post('/web/gateway/batch-renew', { ids, uid })
       const data = res as any
       if (data.code !== 200) {
         ElMessage.error(data.message || '续费失败')

@@ -75,6 +75,33 @@ const routes = [
         ]
       },
       {
+        path: '/dynamic',
+        name: 'Dynamic',
+        meta: { title: '动态代理' },
+        redirect: '/dynamic/meal',
+        component: RouterView,
+        children: [
+          {
+            path: 'meal',
+            name: 'DynamicMeal',
+            component: () => import('../views/dynamic/Meal.vue'),
+            meta: { title: '套餐管理' }
+          },
+          {
+            path: 'whitelist',
+            name: 'DynamicWhitelist',
+            component: () => import('../views/dynamic/Whitelist.vue'),
+            meta: { title: 'IP白名单' }
+          },
+          {
+            path: 'order',
+            name: 'DynamicOrder',
+            component: () => import('../views/dynamic/Order.vue'),
+            meta: { title: '订单管理' }
+          }
+        ]
+      },
+      {
         path: '/setting',
         name: 'Setting',
         meta: { title: '设置' },

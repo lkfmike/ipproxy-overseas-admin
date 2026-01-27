@@ -1,0 +1,171 @@
+@use './variables.scss' as *;
+
+// ===== 通用页面容器样式 =====
+.page-container {
+  // MainLayout已经提供padding，这里不再添加
+}
+
+// ===== 卡片头部统一样式 =====
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+
+    .title {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+    }
+
+    .count-tag {
+      font-weight: $font-weight-normal;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    gap: $spacing-md;
+  }
+}
+
+// ===== 筛选区域统一样式 =====
+.filter-container {
+  margin-bottom: $spacing-xxl;
+  background-color: $bg-filter;
+  padding: $spacing-lg;
+  border-radius: $border-radius-base;
+
+  :deep(.el-form-item) {
+    margin-bottom: 0;
+    margin-right: $spacing-xxl;
+  }
+}
+
+// ===== 分页容器统一样式 =====
+.pagination-container {
+  margin-top: $spacing-xl;
+  display: flex;
+  justify-content: flex-end;
+}
+
+// ===== 价格显示统一样式 =====
+.price {
+  color: $price-color;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  font-weight: $font-weight-semibold;
+}
+
+.price-text {
+  color: $price-color;
+  font-weight: $font-weight-bold;
+}
+
+// ===== 操作按钮组统一样式 =====
+.op-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: 0 $spacing-xs;
+  
+  :deep(.el-button) {
+    padding: 4px 10px;
+    height: 26px;
+    border-radius: $border-radius-md;
+  }
+}
+
+// ===== 用户信息显示 =====
+.user-info {
+  display: flex;
+  align-items: center;
+  
+  span {
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+}
+
+// ===== 表单提示文字 =====
+.form-tip {
+  margin-top: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $text-regular;
+}
+
+// ===== 通用工具类 =====
+.text-bold {
+  font-weight: $font-weight-semibold;
+}
+
+.text-primary {
+  color: $text-primary;
+}
+
+.text-secondary {
+  color: $text-secondary;
+}
+
+.text-regular {
+  color: $text-regular;
+}
+
+.text-xs {
+  font-size: $font-size-xs;
+}
+
+.text-sm {
+  font-size: $font-size-sm;
+}
+
+.text-gray {
+  color: $text-regular;
+}
+
+.mb-4 {
+  margin-bottom: $spacing-lg;
+}
+
+.mr-1 {
+  margin-right: $spacing-xs;
+}
+
+.mt-1 {
+  margin-top: $spacing-xs;
+}
+
+.ml-2 {
+  margin-left: $spacing-sm;
+}
+
+// ===== 响应式样式 =====
+@media screen and (max-width: $breakpoint-sm) {
+  .filter-container {
+    padding: $spacing-md;
+    
+    :deep(.el-form-item) {
+      margin-right: 0;
+      margin-bottom: $spacing-md;
+      width: 100%;
+      
+      .el-form-item__content {
+        width: 100%;
+      }
+    }
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+
+    .header-right {
+      width: 100%;
+    }
+  }
+}

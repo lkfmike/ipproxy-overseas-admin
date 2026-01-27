@@ -28,7 +28,7 @@ const doRefreshToken = async (): Promise<string | null> => {
   const refreshToken = localStorage.getItem('refreshToken')
   if (!refreshToken) return null
   try {
-    const res = await axios.post('/api/auth/refresh', { refreshToken })
+    const res = await axios.post('/api/web/auth/refresh', { refreshToken })
     if (res.data?.code === 200) {
       const data = res.data.data
       localStorage.setItem('token', data.token)

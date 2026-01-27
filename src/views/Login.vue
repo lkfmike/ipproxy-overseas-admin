@@ -104,7 +104,7 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
       try {
-        const res: any = await request.post('/auth/login', {
+        const res: any = await request.post('/web/auth/login', {
           email: form.username,
           password: form.password
         })

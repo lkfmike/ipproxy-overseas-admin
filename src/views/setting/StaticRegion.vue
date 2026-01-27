@@ -155,7 +155,7 @@ const rules = reactive<FormRules>({
 const fetchData = async () => {
   loading.value = true
   try {
-    const res: any = await request.get('/area-region/list', {
+    const res: any = await request.get('/web/area-region/list', {
       params: {
         page: currentPage.value,
         size: pageSize.value,
@@ -242,7 +242,7 @@ const handleDelete = (row: AreaRegionInfo) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/area-region/delete', { id: row.id })
+      await request.post('/web/area-region/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchData()
     } catch (error) {

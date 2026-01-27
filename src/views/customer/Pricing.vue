@@ -207,7 +207,7 @@ const fetchList = async () => {
         quality: filters.quality || undefined,
         area: filters.area || undefined,
     }
-    const res = await request.get('/static-proxy-price/list', { params })
+    const res = await request.get('/web/static-proxy-price/list', { params })
     console.log('fetchList success', res)
     tableData.value = res.data?.list || []
     total.value = res.data?.total || 0
@@ -300,7 +300,7 @@ const handleDelete = (row: StaticProxyPrice) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/static-proxy-price/delete', { id: row.id })
+      await request.post('/web/static-proxy-price/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchList()
     } catch (error) {

@@ -111,7 +111,7 @@
             <el-option
               v-for="item in userList"
               :key="item.uid"
-              :label="item.email + ' (UID: ' + item.uid + ')'"
+              :label="item.email"
               :value="item.uid"
             />
           </el-select>
@@ -182,7 +182,7 @@ const searchUsers = async (query: string) => {
     if (query) {
       params.email = query
     }
-    const res = await request.get('/account/list', { params })
+    const res = await request.get('/web/account/list', { params })
     userList.value = res.data?.list || []
   } catch (error) {
     console.error('Search user error', error)
@@ -222,7 +222,7 @@ const fetchList = async () => {
       size: pageSize.value,
       keyword: filters.keyword || undefined
     }
-    const res = await request.get('/account-discount/list', { params })
+    const res = await request.get('/web/account-discount/list', { params })
     tableData.value = res.data?.list || []
     total.value = res.data?.total || 0
   } catch (error) {
@@ -280,7 +280,7 @@ const handleDelete = (row: AccountDiscount) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/account-discount/delete', { id: row.id })
+      await request.post('/web/account-discount/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchList()
     } catch (error) {
@@ -294,7 +294,7 @@ const handleSubmit = async () => {
   await formRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        const url = dialogType.value === 'create' ? '/account-discount/create' : '/account-discount/update'
+        const url = dialogType.value === 'create' ? '/web/account-discount/create' : '/web/account-discount/update'
         await request.post(url, formData)
         ElMessage.success(dialogType.value === 'create' ? '新增成功' : '更新成功')
         dialogVisible.value = false

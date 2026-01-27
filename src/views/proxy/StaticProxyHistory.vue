@@ -173,7 +173,7 @@ const searchUsers = async (query: string) => {
     if (query) {
       params.email = query
     }
-    const res = await request.get('/account/list', { params })
+    const res = await request.get('/web/account/list', { params })
     userList.value = res.data?.list || []
   } catch (error) {
     console.error('Search user error', error)
@@ -193,7 +193,7 @@ const fetchData = async () => {
       area: filterForm.area,
       remark: filterForm.remark
     }
-    const res = await request.get('/gateway-ip-pool-history/list', { params })
+    const res = await request.get('/web/gateway-ip-pool-history/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (error) {

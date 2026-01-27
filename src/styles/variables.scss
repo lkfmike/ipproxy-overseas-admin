@@ -1,0 +1,82 @@
+// 全局设计规范变量
+
+// ===== 颜色规范 =====
+// 主色
+$primary-color: #165dff;
+$primary-hover: #4080ff;
+$primary-active: #0e42d2;
+
+// 文本颜色
+$text-primary: #1d2129;
+$text-secondary: #4e5969;
+$text-regular: #86909c;
+$text-disabled: #c9cdd4;
+
+// 背景颜色
+$bg-page: #f2f3f5;
+$bg-card: #ffffff;
+$bg-filter: #f7f8fa;
+$bg-hover: #f2f3f5;
+
+// 边框颜色
+$border-color: #e5e6eb;
+$border-hover: #c9cdd4;
+
+// 状态颜色
+$success-color: #00b42a;
+$warning-color: #ff7d00;
+$danger-color: #f53f3f;
+$info-color: #86909c;
+
+// 价格颜色（统一使用橙色）
+$price-color: #ff7d00;
+$price-bold: #f56c0c;
+
+// ===== 间距规范 =====
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 20px;
+$spacing-xxl: 24px;
+$spacing-xxxl: 32px;
+
+// ===== 字体规范 =====
+$font-size-xs: 12px;
+$font-size-sm: 13px;
+$font-size-base: 14px;
+$font-size-md: 15px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-xxl: 20px;
+$font-size-title: 24px;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// ===== 圆角规范 =====
+$border-radius-sm: 2px;
+$border-radius-base: 4px;
+$border-radius-md: 6px;
+$border-radius-lg: 8px;
+
+// ===== 阴影规范 =====
+$shadow-light: 0 1px 2px rgba(0, 0, 0, 0.03);
+$shadow-base: 0 1px 4px rgba(0, 21, 41, 0.08);
+$shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+// ===== 布局规范 =====
+$header-height: 64px;
+$footer-height: 48px;
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 64px;
+
+// ===== 响应式断点 =====
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 992px;
+$breakpoint-lg: 1200px;
+$breakpoint-xl: 1920px;
