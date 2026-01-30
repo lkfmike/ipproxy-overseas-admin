@@ -207,7 +207,7 @@
         <el-form-item label="代理类型" prop="proxyType">
           <el-select v-model="createForm.proxyType" placeholder="请选择代理类型" style="width: 100%" :disabled="!!createForm.parentUid">
             <el-option label="动态住宅" value="residential" />
-            <el-option label="移动代理" value="mobile" />
+            <el-option label="移动住宅" value="mobile" />
           </el-select>
           <div class="form-tip" v-if="createForm.parentUid">已选择父账号，代理类型已与父账号一致</div>
         </el-form-item>
@@ -290,7 +290,7 @@
         <el-form-item label="代理类型" prop="proxyType">
           <el-select v-model="proxyForm.proxyType" placeholder="请选择代理类型" style="width: 100%">
             <el-option label="动态住宅" value="residential" />
-            <el-option label="移动代理" value="mobile" />
+            <el-option label="移动住宅" value="mobile" />
           </el-select>
         </el-form-item>
         <el-form-item label="代理用户名" prop="proxyUsername">
@@ -642,7 +642,7 @@ const formatDate = (dateStr: string) => {
 
 const formatProxyType = (t?: string) => {
   if (!t) return '-'
-  return t === 'residential' ? '动态住宅' : '移动代理'
+  return t === 'residential' ? '动态住宅' : '移动住宅'
 }
 
 const validateProxyString = (s: string, cb: (e?: Error) => void) => {

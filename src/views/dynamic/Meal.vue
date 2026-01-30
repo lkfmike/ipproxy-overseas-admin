@@ -17,7 +17,7 @@
           <el-form-item label="类型">
             <el-select v-model="filterForm.type" placeholder="全部类型" clearable style="width: 180px">
               <el-option label="动态住宅" value="residential" />
-              <el-option label="移动代理" value="mobile" />
+              <el-option label="移动住宅" value="mobile" />
             </el-select>
           </el-form-item>
           <el-form-item label="关键词">
@@ -88,7 +88,7 @@
         <el-form-item label="类型" prop="type">
           <el-select v-model="formData.type" placeholder="请选择类型" style="width: 100%">
             <el-option label="动态住宅" value="residential" />
-            <el-option label="移动代理" value="mobile" />
+            <el-option label="移动住宅" value="mobile" />
           </el-select>
         </el-form-item>
         <el-form-item label="流量(GB)" prop="traffic">
@@ -266,7 +266,7 @@ const confirmDelete = (row: any) => {
 
 const formatType = (val?: string) => {
   if (!val) return '-'
-  return val === 'residential' ? '动态住宅' : '移动代理'
+  return val === 'residential' ? '动态住宅' : '移动住宅'
 }
 
 onMounted(() => {

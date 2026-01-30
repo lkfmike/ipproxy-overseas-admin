@@ -39,7 +39,7 @@
           <el-form-item label="类型">
             <el-select v-model="filterForm.type" placeholder="全部" clearable style="width: 160px">
               <el-option label="动态住宅" value="residential" />
-              <el-option label="移动代理" value="mobile" />
+              <el-option label="移动住宅" value="mobile" />
             </el-select>
           </el-form-item>
           <el-form-item label="状态">
@@ -173,7 +173,7 @@
           <el-form-item label="套餐类型" prop="type">
             <el-select v-model="formData.type" placeholder="请选择类型" style="width: 100%" @change="loadMeals" :disabled="true">
               <el-option v-if="selectedAccountType === 'residential'" label="动态住宅" value="residential" />
-              <el-option v-if="selectedAccountType === 'mobile'" label="移动代理" value="mobile" />
+              <el-option v-if="selectedAccountType === 'mobile'" label="移动住宅" value="mobile" />
             </el-select>
           </el-form-item>
           <el-form-item label="选择套餐" prop="mealId">
@@ -194,7 +194,7 @@
           <el-form-item label="类型" prop="type">
             <el-select v-model="formData.type" placeholder="请选择类型" style="width: 100%" :disabled="true">
               <el-option v-if="selectedAccountType === 'residential'" label="动态住宅" value="residential" />
-              <el-option v-if="selectedAccountType === 'mobile'" label="移动代理" value="mobile" />
+              <el-option v-if="selectedAccountType === 'mobile'" label="移动住宅" value="mobile" />
             </el-select>
           </el-form-item>
           <el-form-item label="总流量(GB)" prop="totalTraffic">
@@ -470,7 +470,7 @@ const handleCommand = async (cmd: string, row: any) => {
 
 const formatType = (val?: string) => {
   if (!val) return '-'
-  return val === 'residential' ? '动态住宅' : '移动代理'
+  return val === 'residential' ? '动态住宅' : '移动住宅'
 }
 
 const formatStatus = (val?: string) => {
