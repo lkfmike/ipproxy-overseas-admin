@@ -105,6 +105,13 @@ const routes = [
             component: () => import('../views/dynamic/Order.vue'),
             meta: { title: '订单管理' }
           }
+          ,
+          {
+            path: 'supplier',
+            name: 'DynamicSupplier',
+            component: () => import('../views/dynamic/Supplier.vue'),
+            meta: { title: '供应商管理' }
+          }
         ]
       },
       {
