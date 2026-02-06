@@ -16,11 +16,12 @@
         <el-table :data="tableData" style="width: 100%" stripe border>
           <el-table-column prop="id" label="ID" width="80" align="center" />
           <el-table-column prop="supplierName" label="供应商名称" min-width="160" />
+          <el-table-column prop="supplierTypeName" label="类型名称" min-width="140" />
+          <el-table-column prop="proxyType" label="代理类型" width="120" align="center" />
           <el-table-column prop="user" label="鉴权用户名" min-width="160" />
           <el-table-column prop="pass" label="鉴权密码" min-width="160" />
           <el-table-column prop="min" label="最短时长" width="120" align="center" />
           <el-table-column prop="max" label="最长时长" width="120" align="center" />
-          <el-table-column prop="supplierTypeName" label="类型名称" min-width="140" />
           <el-table-column prop="supportLevel" label="支持级别" width="120" align="center" />
           <el-table-column label="国家大小写" width="120" align="center">
             <template #default="scope">
@@ -29,7 +30,6 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createdAt" label="创建时间" min-width="180" />
           <el-table-column label="操作" width="220" fixed="right" align="center">
             <template #default="scope">
               <el-button link type="primary" :icon="Edit" @click="openEdit(scope.row)">编辑</el-button>
@@ -40,51 +40,71 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogType === 'create' ? '新增供应商' : '编辑供应商'" width="860px" destroy-on-close>
-      <el-form :model="formData" :rules="rules" ref="formRef" label-width="130px" label-position="left">
+    <el-dialog class="supplier-dialog" v-model="dialogVisible" :title="dialogType === 'create' ? '新增供应商' : '编辑供应商'" width="860px" destroy-on-close :align-center="false" top="8vh">
+      <el-form :model="formData" :rules="rules" ref="formRef" label-position="top" size="small">
         <el-row :gutter="16">
-          <el-col :xs="24" :md="12">
+          <el-col :xs="24" :md="6">
             <el-form-item label="供应商名称" prop="supplierName">
               <el-input v-model="formData.supplierName" />
             </el-form-item>
           </el-col>
+          <el-col :xs="24" :md="6">
+            <el-form-item label="类型名称" prop="supplierTypeName">
+              <el-input v-model="formData.supplierTypeName" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="6">
+            <el-form-item label="代理类型" prop="proxyType">
+              <el-select v-model="formData.proxyType" placeholder="请选择" style="width: 100%">
+                <el-option label="Residential" value="residential" />
+                <el-option label="Mobile" value="mobile" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="6">
+            <el-form-item label="可用网关" prop="availableGatewayStr">
+              <el-select
+                v-model="formData.availableGatewayArr"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                placeholder="输入网关后按回车添加"
+                style="width: 100%"
+              >
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="16">
           <el-col :xs="24" :md="12">
             <el-form-item label="鉴权用户名" prop="user">
               <el-input v-model="formData.user" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="16">
           <el-col :xs="24" :md="12">
             <el-form-item label="鉴权密码" prop="pass">
               <el-input v-model="formData.pass" type="password" show-password />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :md="12">
+        </el-row>
+        <el-row :gutter="16">
+          <el-col :xs="24" :md="6">
             <el-form-item label="最短时长" prop="min">
               <el-input-number v-model="formData.min" :min="0" :step="1" style="width: 100%" controls-position="right" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :xs="24" :md="12">
+          <el-col :xs="24" :md="6">
             <el-form-item label="最长时长" prop="max">
               <el-input-number v-model="formData.max" :min="0" :step="1" style="width: 100%" controls-position="right" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :md="12">
-            <el-form-item label="类型名称" prop="supplierTypeName">
-              <el-input v-model="formData.supplierTypeName" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :xs="24" :md="12">
+          <el-col :xs="24" :md="6">
             <el-form-item label="支持级别" prop="supportLevel">
               <el-input-number v-model="formData.supportLevel" :min="0" :step="1" style="width: 100%" controls-position="right" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :md="12">
+          <el-col :xs="24" :md="6">
             <el-form-item label="国家大小写" prop="areaCaseType">
               <el-select v-model="formData.areaCaseType" placeholder="请选择" style="width: 100%">
                 <el-option label="大写" :value="1" />
@@ -141,20 +161,6 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="16">
-          <el-col :xs="24" :md="24">
-            <el-form-item label="可用国家字符串" prop="availableCountryStr">
-              <el-input v-model="formData.availableCountryStr" type="textarea" :rows="3" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :xs="24" :md="24">
-            <el-form-item label="可用网关字符串" prop="availableGatewayStr">
-              <el-input v-model="formData.availableGatewayStr" type="textarea" :rows="3" />
-            </el-form-item>
-          </el-col>
-        </el-row>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -194,11 +200,12 @@ const formRef = ref<FormInstance>()
 const formData = reactive<any>({
   id: undefined,
   supplierName: '',
+  proxyType: 'residential',
   user: '',
   pass: '',
   min: 0,
   max: 0,
-  availableCountryStr: '',
+  availableGatewayArr: [],
   authFormat: '',
   authFormatOnce: '',
   authFormatArea: '',
@@ -215,6 +222,7 @@ const formData = reactive<any>({
 
 const rules = reactive<FormRules>({
   supplierName: [{ required: true, message: '请输入供应商名称', trigger: 'blur' }],
+  proxyType: [{ required: true, message: '请选择代理类型', trigger: 'change' }],
   user: [{ required: true, message: '请输入鉴权用户名', trigger: 'blur' }],
   pass: [{ required: true, message: '请输入鉴权密码', trigger: 'blur' }],
 })
@@ -224,11 +232,12 @@ const openCreate = () => {
   Object.assign(formData, {
     id: undefined,
     supplierName: '',
+    proxyType: 'residential',
     user: '',
     pass: '',
     min: 0,
     max: 0,
-    availableCountryStr: '',
+    availableGatewayArr: [],
     authFormat: '',
     authFormatOnce: '',
     authFormatArea: '',
@@ -250,11 +259,22 @@ const openEdit = (row: any) => {
   Object.assign(formData, {
     id: row.id,
     supplierName: row.supplierName,
+    proxyType: row.proxyType || 'residential',
     user: row.user,
     pass: row.pass,
     min: row.min,
     max: row.max,
-    availableCountryStr: row.availableCountryStr || '',
+    availableGatewayArr: (() => {
+      const s = row.availableGatewayStr || ''
+      const t = String(s).trim()
+      if (t.startsWith('[') && t.endsWith(']')) {
+        const inner = t.slice(1, -1).trim()
+        if (!inner) return []
+        return inner.split(',').map((x: string) => x.trim().replace(/^['"]|['"]$/g, '')).filter((x: string) => x)
+      }
+      if (!t) return []
+      return t.split(',').map((x: string) => x.trim().replace(/^['"]|['"]$/g, '')).filter((x: string) => x)
+    })(),
     authFormat: row.authFormat || '',
     authFormatOnce: row.authFormatOnce || '',
     authFormatArea: row.authFormatArea || '',
@@ -277,11 +297,15 @@ const submitForm = async () => {
     if (!valid) return
     submitLoading.value = true
     try {
+      const payload = {
+        ...formData,
+        availableGatewayStr: `['${(formData.availableGatewayArr || []).map((x: string) => String(x).trim()).filter((x: string) => x).join("','")}']`
+      }
       if (dialogType.value === 'create') {
-        await request.post('/web/dynamic/addDynamicSupplier', formData)
+        await request.post('/web/dynamic/addDynamicSupplier', payload)
         ElMessage.success('创建成功')
       } else {
-        await request.post('/web/dynamic/updateDynamicSupplier', formData)
+        await request.post('/web/dynamic/updateDynamicSupplier', payload)
         ElMessage.success('更新成功')
       }
       dialogVisible.value = false
@@ -336,5 +360,12 @@ onMounted(() => {
       color: $text-primary;
     }
   }
+}
+
+.supplier-dialog :deep(.el-dialog__body) {
+  padding: 12px 16px;
+}
+.supplier-dialog :deep(.el-form-item) {
+  margin-bottom: 8px;
 }
 </style>

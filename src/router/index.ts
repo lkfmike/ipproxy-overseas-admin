@@ -112,6 +112,13 @@ const routes = [
             component: () => import('../views/dynamic/Supplier.vue'),
             meta: { title: '供应商管理' }
           }
+          ,
+          {
+            path: 'fusion-location',
+            name: 'DynamicFusionLocation',
+            component: () => import('../views/dynamic/FusionLocation.vue'),
+            meta: { title: '融合地区设置' }
+          }
         ]
       },
       {

@@ -206,7 +206,8 @@ const menuList: MenuItem[] = [
       { title: '套餐管理', path: '/dynamic/meal', icon: Box },
       { title: 'IP白名单', path: '/dynamic/whitelist', icon: Lock },
       { title: '订单管理', path: '/dynamic/order', icon: Tickets },
-      { title: '供应商管理', path: '/dynamic/supplier', icon: Connection }
+      { title: '供应商管理', path: '/dynamic/supplier', icon: Connection },
+      { title: '融合地区设置', path: '/dynamic/fusion-location', icon: MapLocation }
     ]
   },
   
