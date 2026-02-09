@@ -5,6 +5,7 @@
         <div class="card-header">
           <div class="header-left">
             <span class="title">动态地区管理</span>
+            <span class="subtitle">统一地区与供应商映射配置</span>
           </div>
           <div class="header-right">
             <el-button type="primary" :icon="Plus" @click="openCreate">新增地区</el-button>
@@ -102,8 +103,9 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="900px" align-center>
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="1000px" class="no-scroll-dialog" align-center>
       <el-form :model="formData" :rules="rules" ref="formRef" label-width="140px">
+        <el-divider content-position="left" class="section-divider">基础信息</el-divider>
         <el-row :gutter="12">
           <el-col :span="8">
             <el-form-item label="国家" prop="area">
@@ -122,7 +124,7 @@
           </el-col>
         </el-row>
 
-        <el-divider content-position="left">Infatica 映射</el-divider>
+        <el-divider content-position="left" class="section-divider">Infatica 映射</el-divider>
         <el-row :gutter="12">
           <el-col :span="8">
             <el-form-item label="Infatica 国家">
@@ -140,6 +142,7 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-divider content-position="left" class="section-divider">Infatica 支持</el-divider>
         <el-row :gutter="12">
           <el-col :span="8">
             <el-form-item label="国家支持">
@@ -158,7 +161,7 @@
           </el-col>
         </el-row>
 
-        <el-divider content-position="left">NetNut 映射</el-divider>
+        <el-divider content-position="left" class="section-divider">NetNut 映射</el-divider>
         <el-row :gutter="12">
           <el-col :span="8">
             <el-form-item label="NetNut 国家">
@@ -176,6 +179,7 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-divider content-position="left" class="section-divider">NetNut 支持</el-divider>
         <el-row :gutter="12">
           <el-col :span="8">
             <el-form-item label="国家支持">
@@ -404,6 +408,22 @@ onMounted(() => {
 .page-container {
   padding: 16px;
 }
+.no-scroll-dialog :deep(.el-dialog__body) {
+  max-height: none;
+  overflow-y: visible;
+}
+:deep(.el-form-item) {
+  margin-bottom: 10px;
+}
+.title {
+  font-size: 18px;
+  font-weight: 600;
+}
+.subtitle {
+  margin-left: 12px;
+  color: #94a3b8;
+  font-size: 13px;
+}
 .card-header {
   display: flex;
   align-items: center;
@@ -433,5 +453,8 @@ onMounted(() => {
   gap: 6px;
   flex-wrap: wrap;
   margin-top: 4px;
+}
+.section-divider {
+  margin: 12px 0;
 }
 </style>

@@ -207,7 +207,8 @@ const menuList: MenuItem[] = [
       { title: '动态地区', path: '/dynamic/region', icon: MapLocation },
       { title: '套餐管理', path: '/dynamic/meal', icon: Box },
       { title: 'IP白名单', path: '/dynamic/whitelist', icon: Lock },
-      { title: '订单管理', path: '/dynamic/order', icon: Tickets }
+      { title: '订单管理', path: '/dynamic/order', icon: Tickets },
+      { title: '供应商', path: '/dynamic/supplier', icon: Platform }
     ]
   },
   
