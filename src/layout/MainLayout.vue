@@ -204,6 +204,7 @@ const menuList: MenuItem[] = [
     path: '/dynamic',
     children: [
       { title: '动态网关', path: '/dynamic/gateway', icon: Connection },
+      { title: '动态地区', path: '/dynamic/region', icon: MapLocation },
       { title: '套餐管理', path: '/dynamic/meal', icon: Box },
       { title: 'IP白名单', path: '/dynamic/whitelist', icon: Lock },
       { title: '订单管理', path: '/dynamic/order', icon: Tickets }

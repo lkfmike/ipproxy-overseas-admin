@@ -94,6 +94,12 @@ const routes = [
             meta: { title: '动态网关' }
           },
           {
+            path: 'region',
+            name: 'DynamicFusionLocation',
+            component: () => import('../views/dynamic/FusionLocation.vue'),
+            meta: { title: '动态地区' }
+          },
+          {
             path: 'meal',
             name: 'DynamicMeal',
             component: () => import('../views/dynamic/Meal.vue'),
