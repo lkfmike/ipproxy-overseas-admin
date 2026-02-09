@@ -88,6 +88,12 @@ const routes = [
         component: RouterView,
         children: [
           {
+            path: 'gateway',
+            name: 'DynamicGateway',
+            component: () => import('../views/dynamic/Gateway.vue'),
+            meta: { title: '动态网关' }
+          },
+          {
             path: 'meal',
             name: 'DynamicMeal',
             component: () => import('../views/dynamic/Meal.vue'),
@@ -104,20 +110,6 @@ const routes = [
             name: 'DynamicOrder',
             component: () => import('../views/dynamic/Order.vue'),
             meta: { title: '订单管理' }
-          }
-          ,
-          {
-            path: 'supplier',
-            name: 'DynamicSupplier',
-            component: () => import('../views/dynamic/Supplier.vue'),
-            meta: { title: '供应商管理' }
-          }
-          ,
-          {
-            path: 'fusion-location',
-            name: 'DynamicFusionLocation',
-            component: () => import('../views/dynamic/FusionLocation.vue'),
-            meta: { title: '融合地区设置' }
           }
         ]
       },

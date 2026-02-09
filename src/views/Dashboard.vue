@@ -132,7 +132,7 @@ const stats = reactive([
 
 // Chart Data Refs
 const staticTrendData = ref<{date: string, count: number}[]>([])
-const dynamicDistributionData = ref<any[]>([])
+const dynamicDistributionData = ref<{name: string, value: number, itemStyle?: any}[]>([])
 const topStaticCustomers = ref<{username: string, ipCount: number}[]>([])
 const topDynamicCustomers = ref<{username: string, totalPurchased: number}[]>([])
 
