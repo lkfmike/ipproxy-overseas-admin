@@ -131,15 +131,15 @@ import {
   User, 
   Postcard, 
   Discount, 
-  Platform, 
   Money, 
   MapLocation, 
-  Tickets, 
   Timer, 
   Aim, 
   Refresh, 
   Box, 
-  Lock
+  Lock,
+  ShoppingCart,
+  Goods
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -187,13 +187,13 @@ const menuList: MenuItem[] = [
   },
   {
     title: '静态代理',
-    icon: Platform,
+    icon: Connection,
     path: '/proxy',
     children: [
         { title: '网关列表', path: '/proxy/gateway', icon: Connection },
         { title: '地区单价', path: '/proxy/pricing', icon: Money },
         { title: '地区管理', path: '/setting/static-region', icon: MapLocation },
-        { title: '订单列表', path: '/proxy/order', icon: Tickets },
+        { title: '订单列表', path: '/proxy/order', icon: ShoppingCart },
         { title: '已释放网关', path: '/proxy/history', icon: Timer },
         { title: 'IP提取', path: '/proxy/tools', icon: Aim }
     ]
@@ -207,8 +207,8 @@ const menuList: MenuItem[] = [
       { title: '动态地区', path: '/dynamic/region', icon: MapLocation },
       { title: '套餐管理', path: '/dynamic/meal', icon: Box },
       { title: 'IP白名单', path: '/dynamic/whitelist', icon: Lock },
-      { title: '订单管理', path: '/dynamic/order', icon: Tickets },
-      { title: '供应商', path: '/dynamic/supplier', icon: Platform }
+      { title: '订单管理', path: '/dynamic/order', icon: ShoppingCart },
+      { title: '供应商', path: '/dynamic/supplier', icon: Goods }
     ]
   },
   
