@@ -36,6 +36,24 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item label="邀请人">
+            <el-select
+              v-model="filterForm.invitedBy"
+              placeholder="选择邀请人"
+              clearable
+              filterable
+              remote
+              :remote-method="searchInviterAccounts"
+              style="width: 220px"
+            >
+              <el-option
+                v-for="item in inviterOptions"
+                :key="item.uid"
+                :label="item.email"
+                :value="item.uid"
+              />
+            </el-select>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
             <el-button :icon="Refresh" @click="handleReset">重置</el-button>
@@ -61,14 +79,15 @@
               <span v-else class="text-placeholder">-</span>
             </template>
           </el-table-column>
+          <el-table-column prop="invitedBy" label="邀请人" min-width="180">
+            <template #default="scope">
+              <span v-if="scope.row.invitedBy && scope.row.invitedBy > 0" class="text-secondary">{{ scope.row.invitedEmail || '-' }}</span>
+              <span v-else class="text-placeholder">-</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="telegram" label="Telegram" min-width="120">
             <template #default="scope">
               {{ scope.row.telegram || '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="inviteCode" label="邀请码" width="100" align="center">
-            <template #default="scope">
-              <span class="font-mono">{{ scope.row.inviteCode || '-' }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="balance" label="余额" min-width="120" align="right">
@@ -135,10 +154,6 @@
                   <span class="value">{{ item.telegram || '-' }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="label">邀请码</span>
-                  <span class="value font-mono">{{ item.inviteCode || '-' }}</span>
-                </div>
-                <div class="info-row">
                   <span class="label">余额</span>
                   <span class="value price font-mono">${{ Number(item.balance || 0).toFixed(2) }}</span>
                 </div>
@@ -151,6 +166,10 @@
                 <div class="info-row">
                   <span class="label">父账号</span>
                   <span class="value text-truncate" style="max-width: 120px;">{{ item.parentUid && item.parentUid > 0 ? (item.parentEmail || '-') : '-' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">邀请人</span>
+                  <span class="value text-truncate" style="max-width: 120px;">{{ item.invitedBy && item.invitedBy > 0 ? (item.invitedEmail || '-') : '-' }}</span>
                 </div>
               </div>
 
@@ -348,7 +367,6 @@
         <el-descriptions-item label="邮箱">{{ currentAccount.email }}</el-descriptions-item>
         <el-descriptions-item label="昵称">{{ currentAccount.nickname || '-' }}</el-descriptions-item>
         <el-descriptions-item label="Telegram">{{ currentAccount.telegram || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="邀请码">{{ currentAccount.inviteCode || '-' }}</el-descriptions-item>
         <el-descriptions-item label="API Token">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="word-break: break-all;">{{ currentAccount.apiToken || '-' }}</span>
@@ -368,6 +386,7 @@
         <el-descriptions-item label="代理用户名">{{ currentAccount.proxyUsername || '-' }}</el-descriptions-item>
         <el-descriptions-item label="代理密码">{{ currentAccount.proxyPassword || '-' }}</el-descriptions-item>
         <el-descriptions-item label="父账号">{{ currentAccount.parentUid && currentAccount.parentUid > 0 ? (currentAccount.parentEmail || '-') : '-' }}</el-descriptions-item>
+        <el-descriptions-item label="邀请人">{{ currentAccount.invitedBy && currentAccount.invitedBy > 0 ? (currentAccount.invitedEmail || '-') : '-' }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="currentAccount.status === 1 ? 'success' : 'danger'" size="small">
             {{ currentAccount.status === 1 ? '正常' : '禁用' }}
@@ -407,13 +426,14 @@ interface Account {
   status: number
   remark: string
   createdAt: string
-  inviteCode: string
   apiToken: string
   proxyType: string
   proxyUsername: string
   proxyPassword: string
   parentUid: number
   parentEmail?: string
+  invitedBy?: number
+  invitedEmail?: string
 }
 
 // Mobile Check
@@ -433,10 +453,12 @@ const router = useRouter()
 const filterForm = reactive({
   email: '',
   nickname: '',
-  parentUid: undefined as number | undefined
+  parentUid: undefined as number | undefined,
+  invitedBy: undefined as number | undefined
 })
 
 const parentOptions = ref<Account[]>([])
+const inviterOptions = ref<Account[]>([])
 
 // Create Dialog
 const createDialogVisible = ref(false)
@@ -604,6 +626,21 @@ const searchParentAccounts = async (query: string) => {
   }
 }
 
+const searchInviterAccounts = async (query: string) => {
+  try {
+    const res: any = await request.get('/web/account/list', {
+      params: {
+        page: 1,
+        size: 10,
+        email: query
+      }
+    })
+    inviterOptions.value = res.data.list || []
+  } catch (e) {
+    inviterOptions.value = []
+  }
+}
+
 // Parent Edit
 const parentDialogVisible = ref(false)
 const parentLoading = ref(false)
@@ -666,7 +703,8 @@ const fetchData = async () => {
         size: pageSize.value,
         email: filterForm.email,
         nickname: filterForm.nickname,
-        parentUid: filterForm.parentUid
+        parentUid: filterForm.parentUid,
+        invitedBy: filterForm.invitedBy
       }
     })
     tableData.value = res.data.list
@@ -685,7 +723,8 @@ const syncQuery = () => {
       size: String(pageSize.value),
       email: filterForm.email || undefined,
       nickname: filterForm.nickname || undefined,
-      parentUid: filterForm.parentUid !== undefined ? String(filterForm.parentUid) : undefined
+      parentUid: filterForm.parentUid !== undefined ? String(filterForm.parentUid) : undefined,
+      invitedBy: filterForm.invitedBy !== undefined ? String(filterForm.invitedBy) : undefined
     }
   })
 }
@@ -700,6 +739,10 @@ const initFromQuery = () => {
     const n = Number(q.parentUid)
     filterForm.parentUid = Number.isFinite(n) ? n : undefined
   }
+  if (q.invitedBy) {
+    const n = Number(q.invitedBy)
+    filterForm.invitedBy = Number.isFinite(n) ? n : undefined
+  }
 }
 
 const handleSearch = () => {
@@ -712,6 +755,7 @@ const handleReset = () => {
   filterForm.email = ''
   filterForm.nickname = ''
   filterForm.parentUid = undefined
+  filterForm.invitedBy = undefined
   currentPage.value = 1
   syncQuery()
   handleSearch()

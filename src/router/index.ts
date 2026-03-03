@@ -34,10 +34,10 @@ const routes = [
             meta: { title: '账号信息' }
           },
           {
-            path: 'discount',
-            name: 'AccountDiscount',
-            component: () => import('../views/customer/AccountDiscount.vue'),
-            meta: { title: '客户折扣' }
+            path: 'invite-code',
+            name: 'InviteCode',
+            component: () => import('../views/customer/InviteCode.vue'),
+            meta: { title: '邀请码' }
           }
         ]
       },

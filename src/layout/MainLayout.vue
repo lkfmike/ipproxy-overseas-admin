@@ -182,7 +182,7 @@ const menuList: MenuItem[] = [
     path: '/customer',
     children: [
       { title: '账号信息', path: '/customer/account', icon: Postcard },
-      { title: '客户折扣', path: '/customer/discount', icon: Discount }
+      { title: '邀请码', path: '/customer/invite-code', icon: Postcard }
     ]
   },
   {
