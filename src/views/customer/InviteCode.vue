@@ -57,10 +57,9 @@
         style="width: 100%"
       >
         <el-table-column prop="id" label="ID" width="80" align="center" />
-        <el-table-column prop="uid" label="UID" width="100" align="center" />
-        <el-table-column label="邮箱" min-width="220">
+        <el-table-column label="用户" min-width="260">
           <template #default="scope">
-            <span>{{ getEmail(scope.row.uid) || '-' }}</span>
+            <span class="font-mono">{{ scope.row.uid }} - {{ getEmail(scope.row.uid) || '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="名字" min-width="140">

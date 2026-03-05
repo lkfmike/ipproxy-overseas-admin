@@ -130,7 +130,6 @@ import {
   Odometer, 
   User, 
   Postcard, 
-  Discount, 
   Money, 
   MapLocation, 
   Timer, 

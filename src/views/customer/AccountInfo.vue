@@ -252,6 +252,10 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="邀请码" prop="inviteCode">
+          <el-input v-model="createForm.inviteCode" placeholder="请输入邀请码（仅支持一个）" />
+          <div class="form-tip">必填，仅支持一个邀请码</div>
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="createForm.remark" type="textarea" placeholder="请输入备注（最多100字）" :rows="3" maxlength="100" show-word-limit />
         </el-form-item>
@@ -471,7 +475,8 @@ const createForm = reactive({
   telegram: '',
   remark: '',
   nickname: '',
-  parentUid: undefined as number | undefined
+  parentUid: undefined as number | undefined,
+  inviteCode: ''
 })
 const createRules = reactive<FormRules>({
   email: [
@@ -483,6 +488,7 @@ const createRules = reactive<FormRules>({
     { min: 6, message: '密码长度不能小于6位', trigger: 'blur' },
     { pattern: /^\S+$/, message: '密码不能包含空格', trigger: 'blur' }
   ],
+  inviteCode: [{ required: true, message: '请输入邀请码', trigger: 'blur' }],
   nickname: [
     { validator: (_r, v, cb) => {
         if (!v) return cb()
@@ -791,7 +797,16 @@ const submitCreate = async () => {
     if (valid) {
       createLoading.value = true
       try {
-        await request.post('/web/account/create', createForm)
+        await request.post('/web/account/create', {
+          email: createForm.email,
+          password: createForm.password,
+          nickname: createForm.nickname,
+          telegram: createForm.telegram,
+          remark: createForm.remark,
+          proxyType: createForm.proxyType,
+          parentUid: createForm.parentUid ?? 0,
+          inviteCode: (createForm.inviteCode || '').trim()
+        })
         ElMessage.success('创建成功')
         createDialogVisible.value = false
         fetchData()

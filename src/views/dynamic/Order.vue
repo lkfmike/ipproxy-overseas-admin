@@ -73,7 +73,7 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="已用/剩余(GB)" width="180" align="center">
+          <el-table-column label="已用/总流量(GB)" width="180" align="center">
             <template #default="scope">
               <div class="traffic-cell">
                 <span class="font-mono">{{ formatUsedRemaining(scope.row) }}</span>
@@ -223,8 +223,8 @@
         <el-descriptions-item label="类型">{{ formatType(currentOrder.type) }}</el-descriptions-item>
         <el-descriptions-item label="数量">{{ currentOrder.quantity }}</el-descriptions-item>
         <el-descriptions-item label="金额">${{ Number(currentOrder.amount || 0).toFixed(2) }}</el-descriptions-item>
-        <el-descriptions-item label="总流量(GB)">{{ Number(currentOrder.totalTraffic || 0).toFixed(2) }}</el-descriptions-item>
-        <el-descriptions-item label="已用/剩余(GB)">{{ Number(currentOrder.usedTraffic || 0).toFixed(2) }} / {{ Number(currentOrder.remainingTraffic || 0).toFixed(2) }}</el-descriptions-item>
+        <el-descriptions-item label="总流量(GB)">{{ formatTotalGb(currentOrder) }}</el-descriptions-item>
+        <el-descriptions-item label="已用/总流量(GB)">{{ formatUsedRemaining(currentOrder) }}</el-descriptions-item>
         <el-descriptions-item label="状态">{{ formatStatus(currentOrder.status) }}</el-descriptions-item>
         <el-descriptions-item label="到期状态">{{ currentOrder.isExpired ? '已过期' : '未过期' }}</el-descriptions-item>
         <el-descriptions-item label="用完状态">{{ currentOrder.isExhausted ? '已用完' : '未用完' }}</el-descriptions-item>
@@ -249,6 +249,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import request from '../../utils/request'
 import dayjs from 'dayjs'
+
+const ONE_GB = 1024 * 1024 * 1024
 
 const loading = ref(false)
 const userLoading = ref(false)
@@ -495,10 +497,33 @@ const calcPercent = (row: any) => {
   return Math.max(0, Math.min(100, Number(p.toFixed(2))))
 }
 
+const bytesToGb = (bytes: any) => {
+  const b = Number(bytes || 0)
+  if (!isFinite(b) || b <= 0) return '0.00'
+  return (b / ONE_GB).toFixed(2)
+}
+
 const formatUsedRemaining = (row: any) => {
-  const used = Number(row.usedTraffic || 0).toFixed(2)
-  const remaining = Number(row.remainingTraffic || 0).toFixed(2)
-  return `${used} / ${remaining} GB`
+  const usedGb = bytesToGb(row.usedTraffic)
+  // 计算总量：优先 totalGb，否则 totalTraffic(字节)，最后 used+remaining(字节)
+  let totalGbStr: string | undefined
+  if (row && row.totalGb != null && row.totalGb !== undefined) {
+    const v = Number(row.totalGb)
+    if (!isNaN(v)) totalGbStr = v.toFixed(2)
+  }
+  if (!totalGbStr) {
+    const totalBytes = Number(row.totalTraffic ?? (Number(row.usedTraffic || 0) + Number(row.remainingTraffic || 0)))
+    totalGbStr = (!isFinite(totalBytes) || totalBytes <= 0) ? '0.00' : (totalBytes / ONE_GB).toFixed(2)
+  }
+  return `${usedGb} / ${totalGbStr} GB`
+}
+
+const formatTotalGb = (row: any) => {
+  if (row && row.totalGb != null && row.totalGb !== undefined) {
+    const v = Number(row.totalGb)
+    if (!isNaN(v)) return v.toFixed(2)
+  }
+  return bytesToGb(row?.totalTraffic)
 }
 const onDropdownCommand = (cmd: string, row: any) => {
   handleCommand(cmd, row)
