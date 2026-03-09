@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <div class="header-left">
-            <span class="title">异步订单管理</span>
+            <span class="title">静态代理订单</span>
           </div>
         </div>
       </template>
@@ -152,7 +152,7 @@ const searchUsers = async (query: string) => {
     if (query) {
       params.email = query
     }
-    const res = await request.get('/web/account/list', { params })
+    const res = await request.get('/api/web/account/list', { params })
     userList.value = res.data?.list || []
   } catch (error) {
   } finally {
@@ -170,7 +170,7 @@ const fetchData = async () => {
       status: filterForm.status,
       orderNo: filterForm.orderNo
     }
-    const res = await request.get('/web/async-order/list', { params })
+    const res = await request.get('/api/web/async-order/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (error) {
@@ -298,3 +298,4 @@ onMounted(() => {
   margin-left: 8px;
 }
 </style>
+

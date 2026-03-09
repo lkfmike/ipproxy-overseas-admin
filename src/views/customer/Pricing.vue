@@ -207,7 +207,7 @@ const fetchList = async () => {
         quality: filters.quality || undefined,
         area: filters.area || undefined,
     }
-    const res = await request.get('/web/static-proxy-price/list', { params })
+    const res = await request.get('/api/web/static-proxy-price/list', { params })
     console.log('fetchList success', res)
     tableData.value = res.data?.list || []
     total.value = res.data?.total || 0
@@ -300,7 +300,7 @@ const handleDelete = (row: StaticProxyPrice) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/web/static-proxy-price/delete', { id: row.id })
+      await request.post('/api/web/static-proxy-price/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchList()
     } catch (error) {
@@ -311,7 +311,7 @@ const handleDelete = (row: StaticProxyPrice) => {
 
 const handleSubmit = async () => {
   try {
-    const url = dialogType.value === 'create' ? '/web/static-proxy-price/create' : '/web/static-proxy-price/update'
+    const url = dialogType.value === 'create' ? '/api/web/static-proxy-price/create' : '/api/web/static-proxy-price/update'
     await request.post(url, formData)
     ElMessage.success(dialogType.value === 'create' ? '创建成功' : '更新成功')
     dialogVisible.value = false

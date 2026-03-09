@@ -320,7 +320,7 @@ const fetchInviteCodes = async () => {
     if (filters.uid) params.uid = filters.uid
     if (filters.code) params.code = filters.code
 
-    const res: any = await request.get('/web/invite-code/list', { params })
+    const res: any = await request.get('/api/web/invite-code/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (e) {
@@ -360,7 +360,7 @@ const searchUsers = async (query: string) => {
       size: 100000
     }
     if (query) params.email = query
-    const res: any = await request.get('/web/account/list', { params })
+    const res: any = await request.get('/api/web/account/list', { params })
     userList.value = res.data?.list || []
   } catch (e) {
     userList.value = []
@@ -406,7 +406,7 @@ const handleDelete = (row: InviteCodeItem) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/web/invite-code/delete', {
+      await request.post('/api/web/invite-code/delete', {
         id: row.id
       })
       ElMessage.success('删除成功')
@@ -448,10 +448,10 @@ const handleSubmit = () => {
       }
 
       if (dialogMode.value === 'create') {
-        await request.post('/web/invite-code/create', payload)
+        await request.post('/api/web/invite-code/create', payload)
         ElMessage.success('创建成功')
       } else {
-        await request.post('/web/invite-code/update', payload)
+        await request.post('/api/web/invite-code/update', payload)
         ElMessage.success('更新成功')
       }
       dialogVisible.value = false

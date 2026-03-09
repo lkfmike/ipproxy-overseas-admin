@@ -144,7 +144,7 @@ const fetchData = async () => {
       type: filterForm.type || undefined,
       keyword: filterForm.keyword || undefined
     }
-    const res = await request.get('/web/dynamic-proxy-meal/list', { params })
+    const res = await request.get('/api/web/dynamic-proxy-meal/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (e) {
@@ -234,10 +234,10 @@ const submitForm = async () => {
     submitLoading.value = true
     try {
       if (dialogType.value === 'create') {
-        await request.post('/web/dynamic-proxy-meal/create', formData)
+        await request.post('/api/web/dynamic-proxy-meal/create', formData)
         ElMessage.success('创建成功')
       } else {
-        await request.post('/web/dynamic-proxy-meal/update', formData)
+        await request.post('/api/web/dynamic-proxy-meal/update', formData)
         ElMessage.success('更新成功')
       }
       dialogVisible.value = false
@@ -256,7 +256,7 @@ const confirmDelete = (row: any) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/web/dynamic-proxy-meal/delete', { id: row.id })
+      await request.post('/api/web/dynamic-proxy-meal/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchData()
     } catch (e) {

@@ -587,7 +587,7 @@ const submitProxy = async () => {
     if (!valid) return
     proxyLoading.value = true
     try {
-      await request.post('/web/account/proxy', {
+      await request.post('/api/web/account/proxy', {
         uid: proxyForm.uid,
         proxyType: proxyForm.proxyType,
         proxyUsername: (proxyForm.proxyUsername || '').trim(),
@@ -619,7 +619,7 @@ const getRandomColor = (id: number) => {
 
 const searchParentAccounts = async (query: string) => {
   try {
-    const res: any = await request.get('/web/account/list', {
+    const res: any = await request.get('/api/web/account/list', {
       params: {
         page: 1,
         size: 10,
@@ -634,7 +634,7 @@ const searchParentAccounts = async (query: string) => {
 
 const searchInviterAccounts = async (query: string) => {
   try {
-    const res: any = await request.get('/web/account/list', {
+    const res: any = await request.get('/api/web/account/list', {
       params: {
         page: 1,
         size: 10,
@@ -665,7 +665,7 @@ const handleParentEdit = (row: Account) => {
 const submitParent = async () => {
   parentLoading.value = true
   try {
-    await request.post('/web/account/parent', {
+    await request.post('/api/web/account/parent', {
       uid: parentForm.uid,
       parentUid: parentForm.parentUid ?? 0
     })
@@ -703,7 +703,7 @@ const validateProxyString = (s: string, cb: (e?: Error) => void) => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res: any = await request.get('/web/account/list', {
+    const res: any = await request.get('/api/web/account/list', {
       params: {
         page: currentPage.value,
         size: pageSize.value,
@@ -797,7 +797,7 @@ const submitCreate = async () => {
     if (valid) {
       createLoading.value = true
       try {
-        await request.post('/web/account/create', {
+        await request.post('/api/web/account/create', {
           email: createForm.email,
           password: createForm.password,
           nickname: createForm.nickname,
@@ -884,7 +884,7 @@ const submitProfile = async () => {
     if (!valid) return
     profileLoading.value = true
     try {
-      await request.post('/web/account/profile', {
+      await request.post('/api/web/account/profile', {
         uid: profileForm.uid,
         nickname: (profileForm.nickname || '').trim(),
         telegram: (profileForm.telegram || '').trim(),
@@ -903,7 +903,7 @@ const submitProfile = async () => {
 // Status Logic
 const handleStatusChange = (row: Account) => {
   const action = row.status === 1 ? '禁用' : '启用'
-  const api = row.status === 1 ? '/web/account/disable' : '/web/account/enable'
+  const api = row.status === 1 ? '/api/web/account/disable' : '/api/web/account/enable'
   
   ElMessageBox.confirm(
     `确定要${action}该账户吗？`,
@@ -938,7 +938,7 @@ const submitBalance = async () => {
     if (valid) {
       balanceLoading.value = true
       try {
-      await request.post('/web/account/balance', balanceForm)
+      await request.post('/api/web/account/balance', balanceForm)
         ElMessage.success('修改余额成功')
         balanceDialogVisible.value = false
         fetchData()

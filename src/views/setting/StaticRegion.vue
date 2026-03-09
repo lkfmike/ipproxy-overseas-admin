@@ -154,7 +154,7 @@ const rules = reactive<FormRules>({
 const fetchData = async () => {
   loading.value = true
   try {
-    const res: any = await request.get('/web/area-region/list', {
+    const res: any = await request.get('/api/web/area-region/list', {
       params: {
         page: currentPage.value,
         size: pageSize.value,
@@ -241,7 +241,7 @@ const handleDelete = (row: AreaRegionInfo) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/web/area-region/delete', { id: row.id })
+      await request.post('/api/web/area-region/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchData()
     } catch (error) {
@@ -256,7 +256,7 @@ const submitForm = async () => {
     if (valid) {
       submitLoading.value = true
       try {
-        const url = form.id ? '/web/area-region/update' : '/web/area-region/create'
+        const url = form.id ? '/api/web/area-region/update' : '/api/web/area-region/create'
         await request.post(url, form)
         ElMessage.success(form.id ? '更新成功' : '创建成功')
         dialogVisible.value = false

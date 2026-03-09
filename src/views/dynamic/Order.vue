@@ -279,7 +279,7 @@ const searchUsers = async (query: string) => {
       size: 100000
     }
     if (query) params.email = query
-    const res = await request.get('/web/account/list', { params })
+    const res = await request.get('/api/web/account/list', { params })
     userList.value = res.data?.list || []
   } catch (e) {
   } finally {
@@ -299,7 +299,7 @@ const loadMeals = async () => {
     const params: any = { page: 1, size: 1000 }
     const type = selectedAccountType.value || formData.type
     if (type) params.type = type
-    const res = await request.get('/web/dynamic-proxy-meal/list', { params })
+    const res = await request.get('/api/web/dynamic-proxy-meal/list', { params })
     mealList.value = res.data?.list || []
   } catch (e) {}
 }
@@ -315,7 +315,7 @@ const fetchData = async () => {
       type: filterForm.type || undefined,
       orderNo: filterForm.orderNo || undefined
     }
-    const res = await request.get('/web/dynamic-proxy-order/list', { params })
+    const res = await request.get('/api/web/dynamic-proxy-order/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (e) {
@@ -410,7 +410,7 @@ const submitForm = async () => {
         payload.amount = formData.amount
         payload.durationDays = formData.durationDays
       }
-      await request.post('/web/dynamic-proxy-order/create', payload)
+      await request.post('/api/web/dynamic-proxy-order/create', payload)
       ElMessage.success('创建成功')
       dialogVisible.value = false
       fetchData()
@@ -424,10 +424,10 @@ const submitForm = async () => {
 const handleCommand = async (cmd: string, row: any) => {
   try {
     if (cmd === 'markPaid') {
-      await request.post('/web/dynamic-proxy-order/update-status', { id: row.id, status: 'paid' })
+      await request.post('/api/web/dynamic-proxy-order/update-status', { id: row.id, status: 'paid' })
       ElMessage.success('已标记为已支付')
     } else if (cmd === 'markCancelled') {
-      await request.post('/web/dynamic-proxy-order/update-status', { id: row.id, status: 'cancelled' })
+      await request.post('/api/web/dynamic-proxy-order/update-status', { id: row.id, status: 'cancelled' })
       ElMessage.success('已取消订单')
     } else if (cmd === 'extend') {
       const { value } = await ElMessageBox.prompt('请输入需要延长的天数', '延长有效期', {
@@ -438,7 +438,7 @@ const handleCommand = async (cmd: string, row: any) => {
       }) as any
       const days = Number(value)
       if (isNaN(days) || days <= 0) return
-      await request.post('/web/dynamic-proxy-order/extend', { id: row.id, days })
+      await request.post('/api/web/dynamic-proxy-order/extend', { id: row.id, days })
       ElMessage.success('已延长有效期')
     } else if (cmd === 'expire') {
       await ElMessageBox.confirm('确定将该订单设置为过期吗？', '提示', {
@@ -446,7 +446,7 @@ const handleCommand = async (cmd: string, row: any) => {
         cancelButtonText: '取消',
         type: 'warning'
       })
-      await request.post('/web/dynamic-proxy-order/expire', { id: row.id })
+      await request.post('/api/web/dynamic-proxy-order/expire', { id: row.id })
       ElMessage.success('已标记为过期')
     } else if (cmd === 'detail') {
       openDetails(row)
@@ -460,7 +460,7 @@ const handleCommand = async (cmd: string, row: any) => {
         cancelButtonText: '取消',
         type: 'warning'
       })
-      await request.post('/web/dynamic-proxy-order/delete', { id: row.id })
+      await request.post('/api/web/dynamic-proxy-order/delete', { id: row.id })
       ElMessage.success('删除成功')
     }
     fetchData()

@@ -138,7 +138,8 @@ import {
   Box, 
   Lock,
   ShoppingCart,
-  Goods
+  Goods,
+  DataAnalysis
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -198,6 +199,14 @@ const menuList: MenuItem[] = [
     ]
   },
   {
+    title: '订单管理',
+    icon: ShoppingCart,
+    path: '/order',
+    children: [
+      { title: '充值订单', path: '/order/payment', icon: Money }
+    ]
+  },
+  {
     title: '动态代理',
     icon: Refresh,
     path: '/dynamic',
@@ -207,7 +216,8 @@ const menuList: MenuItem[] = [
       { title: '套餐管理', path: '/dynamic/meal', icon: Box },
       { title: 'IP白名单', path: '/dynamic/whitelist', icon: Lock },
       { title: '订单管理', path: '/dynamic/order', icon: ShoppingCart },
-      { title: '供应商', path: '/dynamic/supplier', icon: Goods }
+      { title: '供应商', path: '/dynamic/supplier', icon: Goods },
+      { title: '流量消耗明细', path: '/dynamic/traffic', icon: DataAnalysis }
     ]
   },
   

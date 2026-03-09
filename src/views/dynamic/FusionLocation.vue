@@ -276,7 +276,7 @@ const rules = reactive<FormRules>({
 const fetchData = async () => {
   loading.value = true
   try {
-    const res: any = await request.post('/web/dynamic-region/locations', {
+    const res: any = await request.post('/api/web/dynamic-region/locations', {
       page: currentPage.value,
       size: pageSize.value,
       area: filters.area || undefined,
@@ -369,10 +369,10 @@ const submitForm = async () => {
     submitLoading.value = true
     try {
       if (formData.id) {
-        await request.post('/web/dynamic-region/update', formData)
+        await request.post('/api/web/dynamic-region/update', formData)
         ElMessage.success('更新成功')
       } else {
-        await request.post('/web/dynamic-region/create', formData)
+        await request.post('/api/web/dynamic-region/create', formData)
         ElMessage.success('新增成功')
       }
       dialogVisible.value = false
@@ -391,7 +391,7 @@ const confirmDelete = (row: FusionLocation) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/web/dynamic-region/delete', { id: row.id })
+      await request.post('/api/web/dynamic-region/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchData()
     } catch (e) {

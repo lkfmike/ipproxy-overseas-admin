@@ -145,7 +145,7 @@ const searchUsers = async (query: string) => {
       size: 100000
     }
     if (query) params.email = query
-    const res = await request.get('/web/account/list', { params })
+    const res = await request.get('/api/web/account/list', { params })
     userList.value = res.data?.list || []
   } catch (e) {
   } finally {
@@ -161,7 +161,7 @@ const fetchData = async () => {
       size: pagination.size,
       accountId: filterForm.accountId
     }
-    const res = await request.get('/web/dynamic-account-whitelist/list', { params })
+    const res = await request.get('/api/web/dynamic-account-whitelist/list', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (e) {
@@ -220,7 +220,7 @@ const submitForm = async () => {
     }
     submitLoading.value = true
     try {
-      await request.post('/web/dynamic-account-whitelist/create', formData)
+      await request.post('/api/web/dynamic-account-whitelist/create', formData)
       ElMessage.success('添加成功')
       dialogVisible.value = false
       fetchData()
@@ -238,7 +238,7 @@ const confirmDelete = (row: any) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await request.post('/web/dynamic-account-whitelist/delete', { id: row.id })
+      await request.post('/api/web/dynamic-account-whitelist/delete', { id: row.id })
       ElMessage.success('删除成功')
       fetchData()
     } catch (e) {
@@ -248,7 +248,7 @@ const confirmDelete = (row: any) => {
 
 const toggleVerify = async (row: any) => {
   try {
-    await request.post('/web/dynamic-account-whitelist/verify', { id: row.id, verified: !row.verified })
+    await request.post('/api/web/dynamic-account-whitelist/verify', { id: row.id, verified: !row.verified })
     ElMessage.success('状态已更新')
     fetchData()
   } catch (e) {

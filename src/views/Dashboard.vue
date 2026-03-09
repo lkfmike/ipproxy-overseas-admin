@@ -222,7 +222,7 @@ const fetchData = async () => {
   loading.value = true
   try {
     // 1. Static IP Stats
-    const staticStatsRes: any = await request.get('/web/dashboard/staticIpStats')
+    const staticStatsRes: any = await request.get('/api/web/dashboard/staticIpStats')
     if (staticStatsRes.code === 200) {
       const data = staticStatsRes.data
       stats[0].value = data.total
@@ -231,7 +231,7 @@ const fetchData = async () => {
     }
 
     // 2. Dynamic Traffic Stats
-    const dynamicStatsRes: any = await request.get('/web/dashboard/dynamicTrafficStats')
+    const dynamicStatsRes: any = await request.get('/api/web/dashboard/dynamicTrafficStats')
     if (dynamicStatsRes.code === 200) {
       const data = dynamicStatsRes.data
       stats[2].value = data.total
@@ -247,19 +247,19 @@ const fetchData = async () => {
     }
 
     // 3. Top Static Customers
-    const topStaticRes: any = await request.get('/web/dashboard/topStaticIpCustomers')
+    const topStaticRes: any = await request.get('/api/web/dashboard/topStaticIpCustomers')
     if (topStaticRes.code === 200) {
       topStaticCustomers.value = topStaticRes.data
     }
 
     // 4. Top Dynamic Customers
-    const topDynamicRes: any = await request.get('/web/dashboard/topDynamicTrafficCustomers')
+    const topDynamicRes: any = await request.get('/api/web/dashboard/topDynamicTrafficCustomers')
     if (topDynamicRes.code === 200) {
       topDynamicCustomers.value = topDynamicRes.data
     }
 
     // 5. Static IP Trend
-    const trendRes: any = await request.get('/web/dashboard/staticIpExpireTrend')
+    const trendRes: any = await request.get('/api/web/dashboard/staticIpExpireTrend')
     if (trendRes.code === 200) {
       staticTrendData.value = trendRes.data
     }

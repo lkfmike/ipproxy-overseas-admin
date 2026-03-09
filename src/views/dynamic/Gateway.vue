@@ -152,7 +152,7 @@ const fetchData = async () => {
     if (filters.gatewayHostname) body.gatewayHostname = filters.gatewayHostname
     if (filters.mark) body.mark = filters.mark
     
-    const res = await request.post('/web/dynamic-gateway/lines', body)
+    const res = await request.post('/api/web/dynamic-gateway/lines', body)
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (e) {
@@ -219,7 +219,7 @@ const handleDelete = async (row: any) => {
       type: 'warning'
     })
     submitLoading.value = true
-    await request.post('/web/dynamic-gateway/delete', { lineHostname: row.lineHostname })
+    await request.post('/api/web/dynamic-gateway/delete', { lineHostname: row.lineHostname })
     ElMessage.success('删除成功')
     fetchData()
   } catch (e) {
@@ -235,13 +235,13 @@ const submitForm = async () => {
     submitLoading.value = true
     try {
       if (dialogType.value === 'create') {
-        await request.post('/web/dynamic-gateway/create', {
+        await request.post('/api/web/dynamic-gateway/create', {
           lineHostname: formData.lineHostname,
           gatewayHostname: formData.gatewayHostname,
           mark: formData.mark
         })
       } else {
-        await request.post('/web/dynamic-gateway/update', {
+        await request.post('/api/web/dynamic-gateway/update', {
           lineHostname: formData.lineHostname,
           gatewayHostname: formData.gatewayHostname,
           mark: formData.mark

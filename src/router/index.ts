@@ -81,6 +81,21 @@ const routes = [
         ]
       },
       {
+        path: '/order',
+        name: 'Order',
+        meta: { title: '订单管理' },
+        redirect: '/order/payment',
+        component: RouterView,
+        children: [
+          {
+            path: 'payment',
+            name: 'PaymentOrder',
+            component: () => import('../views/order/PaymentOrder.vue'),
+            meta: { title: '充值订单' }
+          }
+        ]
+      },
+      {
         path: '/dynamic',
         name: 'Dynamic',
         meta: { title: '动态代理' },
@@ -122,6 +137,12 @@ const routes = [
             name: 'DynamicSupplier',
             component: () => import('../views/dynamic/Supplier.vue'),
             meta: { title: '供应商' }
+          },
+          {
+            path: 'traffic',
+            name: 'DynamicTraffic',
+            component: () => import('../views/dynamic/Traffic.vue'),
+            meta: { title: '流量消耗明细' }
           }
         ]
       },

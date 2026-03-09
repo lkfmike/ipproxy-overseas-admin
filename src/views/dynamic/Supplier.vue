@@ -219,7 +219,7 @@ const fetchData = async () => {
   loading.value = true
   try {
     const params = { page: pagination.page, size: pagination.size }
-    const res: any = await request.get('/web/dynamic/suppliers', { params })
+    const res: any = await request.get('/api/web/dynamic/suppliers', { params })
     tableData.value = res.data?.list || []
     pagination.total = res.data?.total || 0
   } catch (e) {
@@ -312,10 +312,10 @@ const submitForm = () => {
     submitLoading.value = true
     try {
       if (dialogType.value === 'create') {
-        await request.post('/web/dynamic/addDynamicSupplier', formData)
+        await request.post('/api/web/dynamic/addDynamicSupplier', formData)
         ElMessage.success('新增成功')
       } else {
-        await request.post('/web/dynamic/updateDynamicSupplier', formData)
+        await request.post('/api/web/dynamic/updateDynamicSupplier', formData)
         ElMessage.success('更新成功')
       }
       dialogVisible.value = false
@@ -332,7 +332,7 @@ const handleDelete = (row: any) => {
   ElMessageBox.confirm('确定删除该供应商吗？', '提示', { type: 'warning' })
     .then(async () => {
       try {
-        await request.post('/web/dynamic/deleteDynamicSupplier', { id: row.id })
+        await request.post('/api/web/dynamic/deleteDynamicSupplier', { id: row.id })
         ElMessage.success('删除成功')
         fetchData()
       } catch (e) {
