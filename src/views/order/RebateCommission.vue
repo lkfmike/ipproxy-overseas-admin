@@ -15,6 +15,9 @@
 
       <div class="filter-container">
         <el-form :inline="true" :model="filterForm">
+          <el-form-item label="订单号">
+            <el-input v-model="filterForm.orderNo" placeholder="支持模糊搜索" clearable style="width: 220px" />
+          </el-form-item>
           <el-form-item label="用户邮箱">
             <el-input v-model="filterForm.buyerEmail" placeholder="买家邮箱(支持模糊)" clearable style="width: 220px" />
           </el-form-item>
@@ -109,6 +112,7 @@ const pagination = reactive({
 })
 
 const filterForm = reactive({
+  orderNo: '',
   buyerEmail: '',
   parentEmail: '',
   status: '',
@@ -122,6 +126,7 @@ const fetchData = async () => {
       page: pagination.page,
       size: pagination.size
     }
+    if (filterForm.orderNo) params.orderNo = filterForm.orderNo
     if (filterForm.buyerEmail) params.buyerEmail = filterForm.buyerEmail
     if (filterForm.parentEmail) params.parentEmail = filterForm.parentEmail
     if (filterForm.status) params.status = filterForm.status
@@ -151,6 +156,7 @@ const resetSearch = () => {
   filterForm.parentEmail = ''
   filterForm.status = ''
   filterForm.dates = []
+  filterForm.orderNo = ''
   pagination.page = 1
   fetchData()
 }
