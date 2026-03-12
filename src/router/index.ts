@@ -93,6 +93,13 @@ const routes = [
             component: () => import('../views/order/PaymentOrder.vue'),
             meta: { title: '充值订单' }
           }
+          ,
+          {
+            path: 'rebate',
+            name: 'RebateCommission',
+            component: () => import('../views/order/RebateCommission.vue'),
+            meta: { title: '返佣订单' }
+          }
         ]
       },
       {
@@ -158,6 +165,21 @@ const routes = [
             name: 'StaticRegion',
             component: () => import('../views/setting/StaticRegion.vue'),
             meta: { title: '静态地区设置' }
+          }
+        ]
+      },
+      {
+        path: '/system',
+        name: 'System',
+        meta: { title: '系统管理' },
+        redirect: '/system/site-message',
+        component: RouterView,
+        children: [
+          {
+            path: 'site-message',
+            name: 'SystemSiteMessage',
+            component: () => import('../views/system/SiteMessage.vue'),
+            meta: { title: '站内信' }
           }
         ]
       }

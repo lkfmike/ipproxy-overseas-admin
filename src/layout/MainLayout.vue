@@ -24,8 +24,8 @@
         :default-active="activeMenu"
         class="el-menu-vertical"
         :collapse="isCollapse && !isMobile"
-        background-color="#0f172a"
-        text-color="#94a3b8"
+        background-color="#001529"
+        text-color="rgba(255, 255, 255, 0.65)"
         active-text-color="#ffffff"
         unique-opened
         router
@@ -203,7 +203,8 @@ const menuList: MenuItem[] = [
     icon: ShoppingCart,
     path: '/order',
     children: [
-      { title: '充值订单', path: '/order/payment', icon: Money }
+      { title: '充值订单', path: '/order/payment', icon: Money },
+      { title: '返佣订单', path: '/order/rebate', icon: Money }
     ]
   },
   {
@@ -218,6 +219,14 @@ const menuList: MenuItem[] = [
       { title: '订单管理', path: '/dynamic/order', icon: ShoppingCart },
       { title: '供应商', path: '/dynamic/supplier', icon: Goods },
       { title: '流量消耗明细', path: '/dynamic/traffic', icon: DataAnalysis }
+    ]
+  },
+  {
+    title: '系统管理',
+    icon: Box,
+    path: '/system',
+    children: [
+      { title: '站内信', path: '/system/site-message', icon: Postcard }
     ]
   },
   

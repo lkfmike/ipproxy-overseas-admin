@@ -122,6 +122,13 @@ use([
 const loading = ref(false)
 const trendRange = ref('7d')
 
+const bytesToGB = (bytes: unknown, fractionDigits = 2) => {
+  const n = Number(bytes)
+  if (!Number.isFinite(n) || n <= 0) return 0
+  const gb = n / 1024 / 1024 / 1024
+  return Number(gb.toFixed(fractionDigits))
+}
+
 // Stats Data
 const stats = reactive([
   { label: '静态IP已售总数', value: '0', unit: '个', icon: Connection, color: '#165dff', subLabel: '', isWarning: false },
@@ -234,15 +241,20 @@ const fetchData = async () => {
     const dynamicStatsRes: any = await request.get('/api/web/dashboard/dynamicTrafficStats')
     if (dynamicStatsRes.code === 200) {
       const data = dynamicStatsRes.data
-      stats[2].value = data.total
-      stats[3].value = data.remaining
-      stats[3].subLabel = `已用: ${data.used}`
+      const totalGb = bytesToGB(data.total)
+      const usedGb = bytesToGB(data.used)
+      const expiredGb = bytesToGB(data.expired)
+      const remainingGb = bytesToGB(data.remaining)
+
+      stats[2].value = totalGb
+      stats[3].value = remainingGb
+      stats[3].subLabel = `已用: ${usedGb} GB`
 
       // Prepare Pie Chart Data
       dynamicDistributionData.value = [
-        { value: data.used, name: '已用流量', itemStyle: { color: '#165dff' } },
-        { value: data.remaining, name: '剩余流量', itemStyle: { color: '#00b42a' } },
-        { value: data.expired, name: '过期流量', itemStyle: { color: '#86909c' } }
+        { value: usedGb, name: '已用流量', itemStyle: { color: '#165dff' } },
+        { value: remainingGb, name: '剩余流量', itemStyle: { color: '#00b42a' } },
+        { value: expiredGb, name: '过期流量', itemStyle: { color: '#86909c' } }
       ]
     }
 
@@ -255,7 +267,10 @@ const fetchData = async () => {
     // 4. Top Dynamic Customers
     const topDynamicRes: any = await request.get('/api/web/dashboard/topDynamicTrafficCustomers')
     if (topDynamicRes.code === 200) {
-      topDynamicCustomers.value = topDynamicRes.data
+      topDynamicCustomers.value = (topDynamicRes.data || []).map((item: any) => ({
+        ...item,
+        totalPurchased: bytesToGB(item.totalPurchased)
+      }))
     }
 
     // 5. Static IP Trend
