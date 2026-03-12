@@ -42,6 +42,12 @@
               @keyup.enter="handleSearch"
             />
           </el-form-item>
+          <el-form-item label="是否默认">
+            <el-select v-model="filters.isDefault" placeholder="全部" clearable style="width: 140px">
+              <el-option label="是" :value="1" />
+              <el-option label="否" :value="0" />
+            </el-select>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
             <el-button :icon="Refresh" @click="handleReset">重置</el-button>
@@ -259,7 +265,8 @@ interface AccountOption {
 
 const filters = reactive({
   uid: undefined as number | undefined,
-  code: ''
+  code: '',
+  isDefault: undefined as number | undefined
 })
 
 const pagination = reactive({
@@ -319,6 +326,7 @@ const fetchInviteCodes = async () => {
     }
     if (filters.uid) params.uid = filters.uid
     if (filters.code) params.code = filters.code
+    if (filters.isDefault !== undefined) params.isDefault = filters.isDefault
 
     const res: any = await request.get('/api/web/invite-code/list', { params })
     tableData.value = res.data?.list || []
@@ -337,6 +345,7 @@ const handleSearch = () => {
 const handleReset = () => {
   filters.uid = undefined
   filters.code = ''
+  filters.isDefault = undefined
   pagination.page = 1
   fetchInviteCodes()
 }

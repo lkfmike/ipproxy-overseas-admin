@@ -57,6 +57,16 @@
               <span class="price">{{ Number(scope.row.diff || 0).toFixed(4) }}</span>
             </template>
           </el-table-column>
+          <el-table-column label="买家折扣" width="120" align="center">
+            <template #default="scope">
+              <span class="price">{{ Number(scope.row.childDiscount || 0).toFixed(4) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="上级折扣" width="120" align="center">
+            <template #default="scope">
+              <span class="price">{{ Number(scope.row.parentDiscount || 0).toFixed(4) }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="返佣金额(USD)" width="140" align="right">
             <template #default="scope">
               <span class="price text-bold">{{ Number(scope.row.amountUsd || 0).toFixed(2) }}</span>
