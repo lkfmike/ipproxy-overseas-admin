@@ -148,7 +148,7 @@ const fetchData = async () => {
         queryParams.endDate = ''
     }
     
-    const res = await request.post('/api/web/dynamic/trafficList', queryParams)
+    const res: any = await request.post('/api/web/dynamic/trafficList', queryParams)
     if (res.code === 200) {
       tableData.value = res.data.list
       total.value = res.data.total

@@ -246,8 +246,8 @@ const fetchData = async () => {
       const expiredGb = bytesToGB(data.expired)
       const remainingGb = bytesToGB(data.remaining)
 
-      stats[2].value = totalGb
-      stats[3].value = remainingGb
+      stats[2].value = String(totalGb)
+      stats[3].value = String(remainingGb)
       stats[3].subLabel = `已用: ${usedGb} GB`
 
       // Prepare Pie Chart Data
