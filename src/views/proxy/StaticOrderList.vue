@@ -57,6 +57,23 @@
               <div v-if="scope.row.orderNo" class="text-xs text-gray">Vendor: {{ scope.row.orderNo }}</div>
             </template>
           </el-table-column>
+          <el-table-column label="IP信息" min-width="260">
+            <template #default="scope">
+              <div v-if="scope.row.orderType === 'replace'">
+                <div class="text-xs">
+                  <span class="text-gray">旧</span>：
+                  <span class="font-mono">{{ scope.row.oldIpList || '-' }}</span>
+                </div>
+                <div class="text-xs mt-1">
+                  <span class="text-gray">新</span>：
+                  <span class="font-mono">{{ scope.row.ipList || '-' }}</span>
+                </div>
+              </div>
+              <div v-else>
+                <span class="font-mono">{{ scope.row.ipList || '-' }}</span>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column label="用户" min-width="180">
             <template #default="scope">
               <div>

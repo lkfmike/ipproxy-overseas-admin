@@ -143,6 +143,15 @@
               </template>
             </el-table-column>
 
+            <el-table-column label="状态" width="110" align="center">
+              <template #default="scope">
+                <div class="status-badge" :class="scope.row.status">
+                  <span class="dot"></span>
+                  <span class="text">{{ scope.row.status === 'active' ? '活跃' : '过期' }}</span>
+                </div>
+              </template>
+            </el-table-column>
+
             <el-table-column label="自动续费" width="130" align="center">
               <template #default="scope">
                 <el-switch
@@ -179,19 +188,30 @@
 
             <el-table-column prop="remark" label="备注" min-width="100" show-overflow-tooltip />
 
-            <el-table-column label="操作" width="220" fixed="right" align="center">
+            <el-table-column label="操作" width="160" fixed="right" align="center">
               <template #default="scope">
-                <div class="row-actions">
-                  <el-button link type="primary" :icon="Monitor" @click="handleViewDetail(scope.row)">
-                    详情
+                <el-dropdown trigger="click" @command="onActionsCommand(scope.row, $event)">
+                  <el-button type="primary" link>
+                    操作
+                    <el-icon class="el-icon--right"><ArrowDown /></el-icon>
                   </el-button>
-                  <el-button link type="primary" :icon="Edit" @click="handleEdit(scope.row)">
-                    编辑
-                  </el-button>
-                  <el-button link type="danger" :icon="Delete" @click="handleDeleteConfirm(scope.row)">
-                    删除
-                  </el-button>
-                </div>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item command="detail">
+                        <el-icon class="mr-1"><Monitor /></el-icon>详情
+                      </el-dropdown-item>
+                      <el-dropdown-item command="edit">
+                        <el-icon class="mr-1"><Edit /></el-icon>编辑
+                      </el-dropdown-item>
+                      <el-dropdown-item command="replace">
+                        <el-icon class="mr-1"><RefreshLeft /></el-icon>更换
+                      </el-dropdown-item>
+                      <el-dropdown-item divided command="delete">
+                        <el-icon class="mr-1"><Delete /></el-icon>删除
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
               </template>
             </el-table-column>
 
@@ -471,6 +491,61 @@
         </div>
       </template>
     </el-dialog>
+    
+    <el-dialog
+      v-model="replaceDialogVisible"
+      title="更换代理IP"
+      :width="isMobile ? '90%' : '560px'"
+      destroy-on-close
+      class="custom-dialog"
+      :close-on-click-modal="false"
+      align-center
+    >
+      <el-form :model="replaceForm" label-width="100px" class="dialog-form">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="所属地区">
+              <el-input v-model="replaceForm.area" placeholder="地区代码 (如: US)" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="网关地址">
+              <el-input v-model="replaceForm.gateway" placeholder="网关地址" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="出口IP">
+              <el-input v-model="replaceForm.ip" placeholder="IPv4地址" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="端口">
+              <el-input v-model.number="replaceForm.port" placeholder="端口号" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="认证账号">
+              <el-input v-model="replaceForm.authUser" placeholder="认证账号" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="认证密码">
+              <el-input v-model="replaceForm.authPassword" placeholder="认证密码" show-password />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="replaceDialogVisible = false" size="large">取消</el-button>
+          <el-button type="primary" @click="submitReplace" :loading="replacing" size="large">确认更换</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -607,6 +682,20 @@ const formData = reactive({
   remark: '',
   autoRenew: false,
   dedicatedLine: false
+})
+
+const replaceDialogVisible = ref(false)
+const replacing = ref(false)
+const replaceForm = reactive({
+  sourceId: undefined as number | undefined,
+  uid: undefined as number | undefined,
+  area: '',
+  gateway: '',
+  ip: '',
+  port: 8080,
+  authUser: '',
+  authPassword: '',
+  protocol: 'http'
 })
 
 const rules = {
@@ -755,6 +844,47 @@ const handleEdit = (row: any) => {
   }
 }
 
+const handleReplace = (row: any) => {
+  if (!isRowOperable(row)) {
+    ElMessage.warning('已释放网关不可操作')
+    return
+  }
+  replaceForm.sourceId = row.id
+  replaceForm.uid = row.uid
+  replaceForm.area = row.area || ''
+  replaceForm.gateway = row.gateway || ''
+  replaceForm.ip = row.ip || ''
+  replaceForm.port = row.port || 8080
+  replaceForm.authUser = row.authUser || ''
+  replaceForm.authPassword = row.authPassword || ''
+  replaceForm.protocol = row.protocol || 'http'
+  replaceDialogVisible.value = true
+}
+
+const submitReplace = async () => {
+  if (!replaceForm.sourceId || !replaceForm.uid) {
+    ElMessage.error('缺少必要的参数')
+    return
+  }
+  replacing.value = true
+  try {
+    const payload = { ...replaceForm }
+    const res = await request.post('/api/web/static-proxy-order/replace', payload)
+    const data = res as any
+    if (data.code === 200) {
+      ElMessage.success('已生成更换IP订单')
+      replaceDialogVisible.value = false
+      fetchData()
+    } else {
+      ElMessage.error(data.message || '生成订单失败')
+    }
+  } catch (e) {
+    console.error('replace error:', e)
+    ElMessage.error('请求失败')
+  } finally {
+    replacing.value = false
+  }
+}
 const handleSubmit = async () => {
   if (!formRef.value) return
   await formRef.value.validate(async (valid: boolean) => {
@@ -883,6 +1013,25 @@ const handleDownloadQr = async (row: any, type: string) => {
 
 const onQrCommand = (row: any, cmd: string) => {
   handleDownloadQr(row, cmd)
+}
+
+const onActionsCommand = (row: any, cmd: string) => {
+  switch (cmd) {
+    case 'detail':
+      handleViewDetail(row)
+      break
+    case 'edit':
+      handleEdit(row)
+      break
+    case 'replace':
+      handleReplace(row)
+      break
+    case 'delete':
+      handleDeleteConfirm(row)
+      break
+    default:
+      break
+  }
 }
 
 const handleBatchRenew = async () => {
