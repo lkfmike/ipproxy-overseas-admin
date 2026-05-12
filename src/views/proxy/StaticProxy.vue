@@ -206,6 +206,9 @@
                       <el-dropdown-item command="replace">
                         <el-icon class="mr-1"><RefreshLeft /></el-icon>更换
                       </el-dropdown-item>
+                      <el-dropdown-item divided command="recycleRefund" v-if="scope.row.uid">
+                        <el-icon class="mr-1"><Delete /></el-icon>回收并退款
+                      </el-dropdown-item>
                       <el-dropdown-item divided command="delete">
                         <el-icon class="mr-1"><Delete /></el-icon>删除
                       </el-dropdown-item>
@@ -1026,11 +1029,59 @@ const onActionsCommand = (row: any, cmd: string) => {
     case 'replace':
       handleReplace(row)
       break
+    case 'recycleRefund':
+      handleRecycleRefund(row)
+      break
     case 'delete':
       handleDeleteConfirm(row)
       break
     default:
       break
+  }
+}
+
+const handleRecycleRefund = async (row: any) => {
+  if (!row?.id) return
+  let refundDays: number | undefined = undefined
+  try {
+    const r = await ElMessageBox.prompt(
+      '请输入退款天数（需为30天的倍数）。留空则按可退最大月数自动退款。',
+      '回收并退款',
+      {
+        type: 'warning',
+        inputPlaceholder: '例如：30 / 60 / 90',
+        inputValidator: (val: string) => {
+          const v = (val ?? '').trim()
+          if (!v) return true
+          if (!/^\d+$/.test(v)) return '请输入非负整数'
+          const n = Number(v)
+          if (Number.isNaN(n) || n < 0) return '请输入非负整数'
+          if (n % 30 !== 0) return '退款天数需为30天的倍数'
+          return true
+        }
+      }
+    )
+    const v = (r?.value ?? '').trim()
+    if (v) refundDays = Number(v)
+  } catch (e) {
+    return
+  }
+  try {
+    const payload: any = { id: row.id }
+    if (refundDays !== undefined) payload.refundDays = refundDays
+    const res = await request.post('/api/web/gateway/recycle-refund', payload)
+    const data = res as any
+    if (data.code !== 200) {
+      ElMessage.error(data.message || '回收并退款失败')
+      return
+    }
+    const refundAmount = Number(data.data?.refundAmount || 0)
+    const usedDays = Number(data.data?.refundDays ?? 0)
+    ElMessage.success(`回收成功，已按 ${usedDays} 天退款 $${refundAmount.toFixed(2)}`)
+    fetchData()
+  } catch (e: any) {
+    console.error(e)
+    ElMessage.error(e?.message || '回收并退款请求失败')
   }
 }
 
